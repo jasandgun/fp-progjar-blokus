@@ -94,3 +94,56 @@ def draw_gameboard(canvas, board_rects, gameboard, current_piece, player, oppone
                     text = pygame.font.SysFont(None, 15).render("(%s, %s)" % (row, column), True, constants.BLACK)
                     canvas.blit(text, [rect.x + 2, rect.centery - 2])
             counter += 1
+
+def init_piece_rects(p1_remaining_pieces, p2_remaining_pieces):
+    row, column = 0, 0
+    for piece in p1_remaining_pieces.keys():
+        piece_rects = []
+        for i in range(p1_remaining_pieces[piece]["arr"].shape[0]):
+            for j in range(p1_remaining_pieces[piece]["arr"].shape[1]):
+                if p1_remaining_pieces[piece]["arr"][i][j] == 1:
+                    x = (one_piece_box_width * column) + ((MARGIN + single_piece_width) * j) + MARGIN
+                    y = info_box_height + (one_piece_box_height * row) + ((MARGIN + single_piece_height) * i)
+                    piece_rects.append(pygame.Rect([x, y, single_piece_width, single_piece_height]))
+        p1_remaining_pieces[piece]["rects"] = piece_rects
+        column += 1
+        if column == 2:
+            row += 1
+            column = 0
+    
+    row, column = 0, 0
+    for piece in p2_remaining_pieces.keys():
+        piece_rects = []
+        for i in range(p2_remaining_pieces[piece]["arr"].shape[0]):
+            for j in range(p2_remaining_pieces[piece]["arr"].shape[1]):
+                if p2_remaining_pieces[piece]["arr"][i][j] == 1:
+                    x = piece_box_width + board_width + (one_piece_box_width * column) + ((MARGIN + single_piece_width) * j) + MARGIN
+                    y = info_box_height + (one_piece_box_height * row) + ((MARGIN + single_piece_height) * i)
+                    piece_rects.append(pygame.Rect([x, y, single_piece_width, single_piece_height]))
+        p2_remaining_pieces[piece]["rects"] = piece_rects
+        column += 1
+        if column == 2:
+            row += 1
+            column = 0
+
+def draw_pieces(canvas, player1, player2, active_player, selected):
+    p1_pieces, p2_pieces = player1.remaining_pieces, player2.remaining_pieces
+    p1_color, p2_color = player1.color, player2.color
+    for key, val in p1_pieces.items():
+        if not (key == selected and player1.number == active_player.number):
+            for unit_sq in val["rects"]:
+                pygame.draw.rect(canvas, p1_color, unit_sq)
+                unit_sq.x -= MARGIN
+                unit_sq.y -= MARGIN
+                pygame.draw.rect(canvas, constants.WHITE, unit_sq, MARGIN)
+                unit_sq.x += MARGIN
+                unit_sq.y += MARGIN
+    for key, val in p2_pieces.items():
+        if not (key == selected and player2.number == active_player.number):
+            for unit_sq in val["rects"]:
+                pygame.draw.rect(canvas, p2_color, unit_sq)
+                unit_sq.x -= MARGIN
+                unit_sq.y -= MARGIN
+                pygame.draw.rect(canvas, constants.WHITE, unit_sq, MARGIN)
+                unit_sq.x += MARGIN
+                unit_sq.y += MARGIN

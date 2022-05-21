@@ -4,14 +4,15 @@ import pygame, os
 import constants, drawElements, player
 from board import Board
 
-#Handles where the window position is drawn on the os
-os.environ['SDL_VIDEO_WINDOW_POS'] = "%d,%d" % (30,30)
+#Handles where the window position is drawn on the os so it drawn centered
+os.environ['SDL_VIDEO_CENTERED'] = '1'
 
 class PygameClass:
     def __init__(self, player_init_params = None, render = True):
         if render:
             self.screen, self.background, self.piece_surface, self.clock = self.init_pygame()
         self.game_over = False
+        self.selected = None
         self.gameboard = Board()
         self.board_rects = drawElements.init_gameboard(self.gameboard.board)
 
@@ -45,6 +46,7 @@ class PygameClass:
 def game_loop():
     pgc = PygameClass()
     active_player, opponent = pgc.player1, pgc.player2
+    drawElements.init_piece_rects(pgc.player1.remaining_pieces, pgc.player2.remaining_pieces)
     
     while not pgc.game_over:
         #Player's turn, listen for input. We use that as our basis for checking and making turn based moves.
@@ -55,6 +57,8 @@ def game_loop():
         
         #Draw the necessary components
         drawElements.draw_gameboard(pgc.background, pgc.board_rects, pgc.gameboard, active_player.current_piece, active_player, opponent)
+
+        drawElements.draw_pieces(pgc.background, pgc.player1, pgc.player2, active_player, pgc.selected)
         
         pgc.screen.blit(pgc.background, (0,0))
         
