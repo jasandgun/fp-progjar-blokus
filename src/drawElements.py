@@ -1,5 +1,5 @@
 """
-Draw UI elements
+Handle the rendering of UI elements
 """
 
 import math
@@ -58,7 +58,7 @@ def draw_gameboard(canvas, board_rects, gameboard, current_piece, player, oppone
     board_arr = gameboard.board
     is_valid_move = False
 
-    # This section generates the green margin when a valid move is spotted
+    # generate green margin when showing a valid spot
     if len(current_piece["rects"]) > 0:
         if player.is_1st_move:
             for rect in current_piece["rects"]:
@@ -102,10 +102,23 @@ def draw_gameboard(canvas, board_rects, gameboard, current_piece, player, oppone
                 canvas.blit(text, [rect.x, rect.centery - 2])
             else:
                 # WARNING: This rendering within the loop slows down the game
-                if constants.VERBOSITY > 1:
+                if constants.ENABLE_VERBOSE > 1:
                     text = pygame.font.SysFont(None, 15).render("(%s, %s)" % (row, column), True, constants.BLACK)
                     canvas.blit(text, [rect.x + 2, rect.centery - 2])
             counter += 1
+
+
+def get_square_under_mouse(rect_coords=None):
+    if rect_coords is None:
+        pos = pygame.Vector2(pygame.mouse.get_pos()) - board_origin
+    else:
+        pos = rect_coords
+    x, y = [int(v // (board_box_width + MARGIN)) for v in pos]
+    try:
+        if x >= 0 and y >= 0: return [y, x]
+    except IndexError:
+        pass
+    return [-1, -1]
 
 
 def init_piece_rects(p1_remaining_pieces, p2_remaining_pieces):
@@ -220,6 +233,37 @@ def are_squares_within_board(current_piece, board_rects):
     return True
 
 
+def draw_infobox(canvas, player1, player2, active_player):
+    text_dict = {"p1_score": "Player 1 Score: %s" % (player1.score),
+                 "p2_score": "Player 2 Score: %s" % (player2.score),
+                 "title": "Blokus on Pygame"}
+
+    font = pygame.font.SysFont("Trebuchet MS", 30)
+    if active_player.number == 1:
+        current_player_rect = pygame.Rect(
+            (20, 20, piece_box_width - 40, info_box_height - 40))  # x=20, y=20, w=290, h=60
+    else:
+        current_player_rect = pygame.Rect((piece_box_width + board_width + 20, 20, piece_box_width - 40,
+                                           info_box_height - 40))  # x=1010, y=20, w=290, h=60
+    pygame.draw.rect(canvas, constants.GREEN, current_player_rect)
+
+    font_dict = {"p1_score": font.render(text_dict["p1_score"], False, constants.WHITE),
+                 "p2_score": font.render(text_dict["p2_score"], False, constants.WHITE),
+                 "title": font.render(text_dict["title"], False, constants.WHITE)}
+
+    pos_rect_dict = {"p1_score": pygame.Rect((0, 0, piece_box_width, info_box_height)),  # x=0, y=0, w=330, h=100
+                     "p2_score": pygame.Rect((piece_box_width + board_width, 0, piece_box_width, info_box_height)),
+                     # x=990, y=0, w=330, h=100
+                     "title": pygame.Rect((0, 0, info_box_width, info_box_height))}  # x=0, y=0, w=1280, h=100
+
+    pos_dict = {"p1_score": pos_rect_dict["p1_score"].center,
+                "p2_score": pos_rect_dict["p2_score"].center,
+                "title": (pos_rect_dict["title"].midtop[0] + 13, pos_rect_dict["title"].midtop[1] + 13)}
+
+    for key, val in font_dict.items():
+        canvas.blit(val, val.get_rect(center=pos_dict[key]))
+
+
 def generate_element_offsets(remaining_pieces, event):
     offset_list = []
     selected = None
@@ -242,3 +286,30 @@ def generate_element_offsets(remaining_pieces, event):
             selected_offset_y = chosen_piece.y - event.pos[1]
             offset_list.append([selected_offset_x, selected_offset_y])
     return offset_list, selected
+
+
+def draw_infobox_msg(canvas, player1, player2, msg_key):
+    game_over_text = ""
+    if msg_key == "game_over":
+        if player1.score > player2.score:
+            game_over_text = "Game over. Player %s wins!" % (player1.number)
+        elif player1.score < player2.score:
+            game_over_text = "Game over. Player %s wins!" % (player2.number)
+        else:
+            game_over_text = "Game over. It's a tie!"
+    text_dict = {"not_valid_move": "Invalid move. This piece cannot be placed there",
+                 "game_over": game_over_text}
+
+    font = pygame.font.SysFont("Trebuchet MS", 25)
+    font_18 = pygame.font.SysFont("Trebuchet MS", 18)
+
+    font_dict = {"not_valid_move": font.render(text_dict["not_valid_move"], False, constants.RED),
+                 "game_over": font.render(text_dict["game_over"], False, constants.GREEN)}
+
+    pos_rect_dict = {"not_valid_move": pygame.Rect((0, 0, info_box_width, info_box_height)),  # x=0, y=0, w=1280, h=100
+                     "game_over": pygame.Rect((0, 0, info_box_width, info_box_height))}  # x=0, y=0, w=1280, h=100
+
+    pos_dict = {"not_valid_move": pos_rect_dict["not_valid_move"].center,
+                "game_over": pos_rect_dict["game_over"].center, }
+
+    canvas.blit(font_dict[msg_key], font_dict[msg_key].get_rect(center=pos_dict[msg_key]))

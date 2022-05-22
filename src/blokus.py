@@ -1,5 +1,5 @@
 """
-Main program
+Main Blokus program
 """
 
 import os
@@ -10,11 +10,11 @@ import drawElements
 import player
 from board import Board
 
-# Handles where the window position is drawn on the os so it drawn centered
+# game window will be drawn in the center of the screen
 os.environ['SDL_VIDEO_CENTERED'] = '1'
 
 
-class PygameClass:
+class Blokus:
     def __init__(self, player_init_params=None, render=True):
         if render:
             self.screen, self.background, self.piece_surface, self.clock = self.init_pygame()
@@ -24,6 +24,7 @@ class PygameClass:
         self.gameboard = Board()
         self.board_rects = drawElements.init_gameboard(self.gameboard.board)
         self.infobox_msg_time_start = None
+        self.infobox_msg_timeout = 4000
         self.infobox_msg = None
 
         if player_init_params is None:
@@ -45,13 +46,14 @@ class PygameClass:
         player2 = player.Player(constants.PLAYER2_VALUE, player_init_params["p2"]["color"])
         return player1, player2
 
+    # handle the events for Blokus
     def event_handler(self, active_player, opponent):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 self.game_over = True
                 IS_QUIT = True
             elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-                if constants.VERBOSITY > 1:
+                if constants.ENABLE_VERBOSE > 1:
                     print("Mouse pos:", pygame.mouse.get_pos())
                 # if a piece is selected by the player, check if it can be placed
                 if self.selected is not None:
@@ -116,17 +118,16 @@ class PygameClass:
             self.infobox_msg_time_start = None
 
 
-# The main game loop
 def game_loop():
-    pgc = PygameClass()
+    pgc = Blokus()
     active_player, opponent = pgc.player1, pgc.player2
     drawElements.init_piece_rects(pgc.player1.remaining_pieces, pgc.player2.remaining_pieces)
 
     while not pgc.game_over:
-        # Player's turn, listen for input. We use that as our basis for checking and making turn based moves.
+        # listening to player's input
         active_player, opponent = pgc.event_handler(active_player, opponent)
 
-        # Set the screen background
+        # set the background
         pgc.background.fill(constants.BLACK)
 
         """
@@ -140,10 +141,10 @@ def game_loop():
         if pgc.selected is not None:
             drawElements.draw_selected_piece(pgc.background, pgc.offset_list, pygame.mouse.get_pos(),
                                              active_player.current_piece, active_player.color)
-        # Limit to 60 frames per second
+        # limit the fps to 60
         pgc.clock.tick(60)
 
-        # Update the screen with what is drawn.
+        # update the screen
         pygame.display.update()
 
 
