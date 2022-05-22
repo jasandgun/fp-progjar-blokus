@@ -1,10 +1,11 @@
-# To keep all game pieces. Each player has 21-piece sets
-# Each set contains 21 pieces, each a different shape
+"""
+Manage piece types and state
+"""
 
 import numpy as np
 
 
-# returns every possible piece
+# Generate the pieces for each player
 def get_pieces():
     dict_pieces = {
         "piece1": {"arr": np.array([[1]]), "rots": 1, "flips": 1, "rects": []},
@@ -32,22 +33,22 @@ def get_pieces():
     return dict_pieces
 
 
-# Returns all the possible rotational and flipped states of every piece
+# Returns all rotational and flipped states of every piece
 def get_all_piece_states(player=None):
+    # Generate piece for new player or use remaining pieces for existing players
     list_pieces = []
-    # Take the dictionary of remaining pieces
     if player is None:
         pieces = get_pieces()
     else:
         pieces = player.remaining_pieces
-    # Iterate over that dictionary of remaining pieces
+    # Remaining pieces
     for piece in pieces.keys():
         current_piece = pieces[piece]["arr"]
-        # Iterate over number of possible flips for each piece
+        # Flips
         for flip in range(pieces[piece]["flips"]):
             if not flip == 0:
                 current_piece = np.flipud(current_piece)
-            # Iterate over number of possible rotations for each piece
+            # Rotations
             for rot in range(pieces[piece]["rots"]):
                 if not rot == 0:
                     current_piece = np.rot90(current_piece, k=1)

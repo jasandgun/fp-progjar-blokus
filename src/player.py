@@ -1,5 +1,5 @@
 """
-Manage player
+Manage player actions and capabilities
 """
 
 import board
@@ -11,6 +11,7 @@ import numpy as np
 class Player:
     players = [constants.PLAYER1_VALUE, constants.PLAYER2_VALUE]
 
+    # initialize player
     def __init__(self, player_number: int, color: list):
         self.number = player_number
         self.remaining_pieces = pieces.get_pieces()
@@ -24,11 +25,45 @@ class Player:
         self.board_corners = {"bl": [], "br": [], "tl": [], "tr": []}
         self.is_1st_move = True
 
-    # for rotating player's piece
+    # update player's score
+    def update_score(self):
+        self.score = board.scoring_fn(self.remaining_pieces)
+
+    """
+    Player's piece controls
+    - Choose piece
+    - Empty piece (change chosen piece)
+    - Discard piece (remove piece after placed on board)
+    - Retrieve piece (get last piece that has been discarded)
+    - Rotate piece (clockwise or counterclockwise)
+    - Flip piece
+    """
+
+    # Choose piece
+    def set_current_piece(self, piece_name):
+        self.current_piece = {"piece": piece_name, "arr": pieces.get_pieces()[piece_name]}
+
+    # Empty piece
+    def empty_current_piece(self):
+        self.current_piece = {"piece": "", "arr": [], "rotated": 0, "flipped": 0, "rects": [], "place_on_board_at": []}
+
+    # Discard piece, delete from dictionary of current pieces on the player's disposal
+    def discard_piece(self, piece):
+        del self.remaining_pieces[piece["piece"]]
+        # append to dictionary of discarded pieces for the player
+        self.discarded_pieces.append(piece)
+
+    # Retrieve piece
+    def retrieve_last_piece(self):
+        piece = self.discarded_pieces[-1]
+        self.remaining_pieces[piece["piece"]] = pieces.get_pieces()[piece["piece"]]
+        return piece
+
+    # Rotate piece, clockwise or counterclockwise
     def rotate_current_piece(self, clockwise=True):
         max_rots = pieces.get_pieces()[self.current_piece["piece"]]["rots"]
         current_state = self.current_piece["rotated"]
-
+        # clockwise rotation
         if clockwise:
             if current_state == max_rots - 1:
                 current_state = 0
@@ -36,6 +71,7 @@ class Player:
                 current_state += 1
             self.current_piece["rotated"] = current_state
             self.current_piece["arr"] = np.rot90(self.current_piece["arr"], k=1)
+        # counterclockwise rotation
         else:
             if current_state == 0:
                 current_state = max_rots - 1
@@ -44,7 +80,7 @@ class Player:
             self.current_piece["rotated"] = current_state
             self.current_piece["arr"] = np.rot90(self.current_piece["arr"], k=-1)
 
-    # flip current piece
+    # Flip piece diagonally
     def flip_current_piece(self):
         if not pieces.get_pieces()[self.current_piece["piece"]]["flips"] == 1:
             if self.current_piece["flipped"] == 1:
@@ -52,3 +88,10 @@ class Player:
             else:
                 self.current_piece["flipped"] = 1
             self.current_piece["arr"] = np.flipud(self.current_piece["arr"])
+
+
+# Switch players that is currently playing
+def switch_active_player(active_player, opponent):
+    if constants.ENABLE_VERBOSE > 0:
+        print("Player number %d is now active" % opponent.number)
+    return opponent, active_player

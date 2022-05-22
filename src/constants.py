@@ -1,11 +1,21 @@
 """
-Constants for this project
+Constants for Blokus
 """
 
-# Developer options for debugging
-VERBOSITY = 1
+# enable debugging (print to console)
+ENABLE_VERBOSE = 1
 
-# Color RGB
+# colors that are used
+DICT_COLORS = {
+    0: [0, 0, 0],  # BLACK
+    1: [255, 255, 255],  # WHITE
+    2: [255, 0, 0],  # RED
+    3: [0, 255, 0],  # GREEN
+    4: [0, 0, 255],  # BLUE
+    5: [128, 0, 128],  # PURPLE
+    6: [255, 128, 0],  # ORANGE
+    7: [0, 128, 128],  # NAVY
+}
 BLACK = [0, 0, 0]
 WHITE = [255, 255, 255]
 GREEN = [0, 255, 0]
@@ -13,28 +23,29 @@ RED = [255, 60, 0]
 PURPLE = [128, 0, 128]
 ORANGE = [255, 169, 0]
 
-# Board size
+# board size (rows x columns)
 ROW_COUNT = 14
 COLUMN_COUNT = 14
 
-# 89 is the total no. of squares in all 21 pieces
+# total number of squares in all pieces
 STARTING_SCORE = 89
 
-# Window size 16:9
+# game window specification
 WINDOW_WIDTH = 1280
 WINDOW_HEIGHT = 720
 WINDOW_SIZE = [WINDOW_WIDTH, WINDOW_HEIGHT]
 
-# The empty squares on the board shall be populated by this value
+# value for empty squares
 BOARD_FILL_VALUE = 0
 
-# All squares corresponding to player 1 & 2 on the board shall be populated by these values
+# value for player-populated squares
 PLAYER1_VALUE = 1
 PLAYER2_VALUE = 2
 
-# Players need to place their initial moves on the following board coordinates
+# starting points for players
 STARTING_PTS = {"player1": [0, 0],
                 "player2": [ROW_COUNT - 1, COLUMN_COUNT - 1]}
 
-HUMAN_PARAMS = {"default_p1": {"color": PURPLE},
-                "default_p2": {"color": ORANGE}}
+# colors for players
+HUMAN_PARAMS = {"default_p1": {"color": DICT_COLORS[5]},
+                "default_p2": {"color": DICT_COLORS[6]}}
