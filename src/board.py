@@ -78,6 +78,8 @@ class Board:
         for i, x in zip(piece_x_rng, board_x_rng):
             for j, y in zip(piece_y_rng, board_y_rng):
                 if piece_arr[i][j] == 1:
+                    if self.board[x][y] != constants.BOARD_FILL_VALUE:
+                        return False
                     if x-1 >= 0:
                         if self.board[x-1][y] == player.number:
                             return False
