@@ -55,7 +55,7 @@ class Board:
                 if constants.ENABLE_VERBOSE > 0:
                     print("In fit_piece, a move with piece %s turned out to be invalid" % piece)
                 return False
-        if constants.ENABLE_VERBOSE > 0 and not player.is_ai:
+        if constants.ENABLE_VERBOSE > 0 and not player.is_1st_move:
             print("Piece that was successfully fit:", piece)
         player.discard_piece(piece)
         player.empty_current_piece()
@@ -67,8 +67,47 @@ class Board:
             print("Current player's (Player %s) score is: %s and opponent's (Player %s) score is: %s" % \
                   (player.number, player.score, opponent_player.number, opponent_player.score))
         # self.update_board_corners(player, opponent_player)
-        self.optimised_update_board_corners(piece, player, opponent_player)
+        # self.optimised_update_board_corners(piece, player, opponent_player)
         return True
+    
+    def check_is_move_valid(self, piece_arr, player, piece_on_board_at):
+        piece_x_rng = range(piece_arr.shape[0])
+        piece_y_rng = range(piece_arr.shape[1])
+        board_x_rng = range(piece_on_board_at[0], rows)
+        board_y_rng = range(piece_on_board_at[1], cols)
+        for i, x in zip(piece_x_rng, board_x_rng):
+            for j, y in zip(piece_y_rng, board_y_rng):
+                if piece_arr[i][j] == 1:
+                    if x-1 >= 0:
+                        if self.board[x-1][y] == player.number:
+                            return False
+                    if x+1 < rows:
+                        if self.board[x+1][y] == player.number:
+                            return False
+                    if y-1 >= 0:
+                        if self.board[x][y-1] == player.number:
+                            return False
+                    if y+1 < cols:
+                        if self.board[x][y+1] == player.number:
+                            return False
+        for i, x in zip(piece_x_rng, board_x_rng):
+            for j, y in zip(piece_y_rng, board_y_rng):
+                if piece_arr[i][j] == 1:
+                    if x-1 >= 0:
+                        if y-1 >= 0:
+                            if self.board[x-1][y-1] == player.number:
+                                return True
+                        if y+1 < cols:
+                            if self.board[x-1][y+1] == player.number:
+                                return True
+                    if x+1 < rows:
+                        if y-1 >= 0:
+                            if self.board[x+1][y-1] == player.number:
+                                return True
+                        if y+1 < cols:
+                            if self.board[x+1][y+1] == player.number:
+                                return True
+        return False
 
 
 def scoring_fn(remaining_pieces):
@@ -85,5 +124,7 @@ def scoring_fn(remaining_pieces):
     if len(remaining_pieces) == 1 and "piece1" in remaining_pieces and score == 88:
         score += 5
     return score
+
+
 
 
