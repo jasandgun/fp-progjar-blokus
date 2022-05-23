@@ -66,8 +66,14 @@ def draw_gameboard(canvas, board_rects, gameboard, current_piece, player, oppone
                         constants.STARTING_PTS["player%s" % player.number]:
                     is_valid_move = True
         else:
-            if gameboard.check_is_move_valid(current_piece["arr"], player, grid_to_array_coords(
-                    [current_piece["rects"][0].centerx, current_piece["rects"][0].centery])):
+            rect_coords = [ current_piece["rects"][0].centerx,
+                            current_piece["rects"][0].centery]
+            board_arr_coords = grid_to_array_coords(rect_coords)
+            j = 0
+            while not current_piece["arr"][0][j] == 1:
+                j += 1
+            board_arr_coords[1] -= j
+            if gameboard.check_is_move_valid(current_piece["arr"], player, board_arr_coords):
                 is_valid_move = True
     for row in range(board_arr.shape[0]):
         for column in range(board_arr.shape[1]):
