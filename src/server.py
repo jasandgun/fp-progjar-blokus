@@ -1,8 +1,8 @@
-import socket # for networking
-from threading import Thread # for threading
+import socket  # for networking
+from threading import Thread  # for threading
 
-HOST = '127.0.0.1' # this address is the "localhost"
-PORT = 8080        # port to listen on for clients  
+HOST = '127.0.0.1'  # this address is the "localhost"
+PORT = 8080  # port to listen on for clients
 
 # set up the server 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -13,13 +13,15 @@ s.listen(2)
 # set up the client
 list_of_clients = []
 
-def clientthread(conn):
+
+def client_thread(conn):
     while True:
         try:
             data = conn.recv(1024)
             broadcast(data, conn)
         except:
             continue
+
 
 def broadcast(data, connection):
     for client in list_of_clients:
@@ -30,9 +32,11 @@ def broadcast(data, connection):
                 client.close()
                 remove(client)
 
+
 def remove(connection):
     if connection in list_of_clients:
         list_of_clients.remove(connection)
+
 
 # accept a connection from the client
 while True:
@@ -40,17 +44,16 @@ while True:
 
     for client in list_of_clients:
         client.close()
-    list_of_clients = []
-    
-    list_of_clients.append(client_socket)
+    list_of_clients = [client_socket]
+
     client_socket.send('p1'.encode())
-    Thread(target=clientthread, args=(client_socket,)).start()
+    Thread(target=client_thread, args=(client_socket,)).start()
     print(f"\nConnnected to {client_address}!")
 
     client_socket, client_address = s.accept()
     list_of_clients.append(client_socket)
     client_socket.send('p2'.encode())
-    Thread(target=clientthread, args=(client_socket,)).start()
+    Thread(target=client_thread, args=(client_socket,)).start()
     print(f"\nConnnected to {client_address}!")
 
     print("\nGAME START !!!")

@@ -4,9 +4,9 @@ Main Blokus program
 
 import os
 import pygame
-import socket # for networking
-from threading import Thread # for threading
-import pickle # for sending/receiving objects 
+import socket  # for networking
+from threading import Thread  # for threading
+import pickle  # for sending/receiving objects
 
 import constants
 import drawElements
@@ -14,7 +14,7 @@ import player
 from board import Board
 
 HOST = '127.0.0.1'  # the server's IP address 
-PORT = 8080         # the port we're connecting to 
+PORT = 8080  # the port we're connecting to
 
 # connect to the host
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -135,7 +135,7 @@ class Blokus:
             self.infobox_msg_time_start = None
         elif pygame.time.get_ticks() - self.infobox_msg_time_start > self.infobox_msg_timeout:
             self.infobox_msg_time_start = None
-    
+
     def recv_msg(self, sock):
         # receive the board and update it
         while not self.game_over:
@@ -156,7 +156,7 @@ def game_loop():
     else:
         active_player, opponent = pgc.player2, pgc.player1
         drawElements.init_piece_rects(pgc.player2.remaining_pieces)
-    
+
     Thread(target=pgc.recv_msg, args=(s,)).start()
 
     while not pgc.game_over:
