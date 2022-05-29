@@ -139,9 +139,12 @@ class Blokus:
     def recv_msg(self, sock):
         # receive the board and update it
         while not self.game_over:
-            updated_board = sock.recv(1024)
-            updated_board = pickle.loads(updated_board)
-            self.gameboard.board = updated_board
+            try:
+                updated_board = sock.recv(1024)
+                updated_board = pickle.loads(updated_board)
+                self.gameboard.board = updated_board
+            except:
+                break
 
 
 def game_loop():
