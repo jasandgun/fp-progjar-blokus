@@ -43,11 +43,6 @@ class Blokus:
             player_init_params = {"p1": constants.HUMAN_PARAMS["default_p1"],
                                   "p2": constants.HUMAN_PARAMS["default_p2"]}
         self.player1, self.player2 = self.init_players(player_init_params)
-        # player turns
-        # if self.player1.number == 'p1':
-        #     self.player1.is_1st_move = True
-        # elif self.player2.number == 'p2':
-        #     self.player2.is_1st_move = False
 
     def init_pygame(self):
         pygame.init()
@@ -90,14 +85,10 @@ class Blokus:
                         if self.gameboard.fit_piece(active_player.current_piece, active_player, opponent, "player"):
                             self.selected = None
                             # send updated board
-                            print(f"\nSend updated board...")
-                            updated_board = pickle.dumps(self.gameboard.board)
-                            s.send(updated_board)
+                            print(f"\nSend updated statistics...")
+                            updated_statistics = pickle.dumps([self.gameboard.board, self.player1.score, self.player2.score])
+                            s.send(updated_statistics)
                             active_player.update_turn()
-                            # send current player for scoring
-                            # current_player = pickle.dumps(active_player)
-                            # s.send(current_player)
-                            # self.player_turn = not self.player_turn
                         # display error message if it doesn't fit
                         else:
                             self.display_infobox_msg_start("not_valid_move")
@@ -147,25 +138,14 @@ class Blokus:
             self.infobox_msg_time_start = None
 
     def recv_msg(self, sock):
-        # receive the board and update it
+        # receive the statistics and update it
         while not self.game_over:
             try:
-                # pickle_one = sock.recv(1024)
-                # pickle_one = pickle.loads(pickle_one)
-                pickle_two = sock.recv(1024)
-                pickle_two = pickle.loads(pickle_two)
-                # if pickle_one.pickle_identifier == constants.BOARD_ID:
-                #     updated_board = pickle_one
-                #     last_player = pickle_two
-                # else:
-                #     updated_board = pickle_two
-                #     last_player = pickle_one
-                # player
-                # current_player = sock.recv(1024)
-                # current_player = pickle.load(current_player)
-                # print(current_player)
-                # print(last_player.score)
-                self.gameboard.board = pickle_two
+                updated_statistics = sock.recv(1024)
+                updated_statistics = pickle.loads(updated_statistics)
+                self.gameboard.board = updated_statistics[0]
+                self.player1.score = updated_statistics[1]
+                self.player2.score = updated_statistics[2]
                 if self.player_symbol == 'p1':
                     self.player1.update_turn()
                 elif self.player_symbol == 'p2':
