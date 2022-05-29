@@ -114,19 +114,6 @@ def draw_gameboard(canvas, board_rects, gameboard, current_piece, player, oppone
             counter += 1
 
 
-def get_square_under_mouse(rect_coords=None):
-    if rect_coords is None:
-        pos = pygame.Vector2(pygame.mouse.get_pos()) - board_origin
-    else:
-        pos = rect_coords
-    x, y = [int(v // (board_box_width + MARGIN)) for v in pos]
-    try:
-        if x >= 0 and y >= 0: return [y, x]
-    except IndexError:
-        pass
-    return [-1, -1]
-
-
 def init_piece_rects(p1_remaining_pieces):
     row, column = 0, 0
     for piece in p1_remaining_pieces.keys():
@@ -291,7 +278,6 @@ def draw_infobox_msg(canvas, player1, player2, msg_key):
                  "game_over": game_over_text}
 
     font = pygame.font.SysFont("Trebuchet MS", 25)
-    font_18 = pygame.font.SysFont("Trebuchet MS", 18)
 
     font_dict = {"not_valid_move": font.render(text_dict["not_valid_move"], False, constants.RED),
                  "game_over": font.render(text_dict["game_over"], False, constants.GREEN)}

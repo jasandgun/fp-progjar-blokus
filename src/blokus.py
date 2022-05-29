@@ -173,10 +173,10 @@ def game_loop():
         drawElements.draw_gameboard(pgc.background, pgc.board_rects, pgc.gameboard, active_player.current_piece,
                                     active_player, opponent)
         drawElements.draw_pieces(pgc.background, pgc.player1, pgc.player2, active_player, pgc.selected)
-        pgc.screen.blit(pgc.background, (0, 0))
         if pgc.selected is not None:
             drawElements.draw_selected_piece(pgc.background, pgc.offset_list, pygame.mouse.get_pos(),
                                              active_player.current_piece, active_player.color)
+        pgc.screen.blit(pgc.background, (0, 0))
         # limit the fps to 60
         pgc.clock.tick(60)
 
