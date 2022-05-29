@@ -127,7 +127,7 @@ def get_square_under_mouse(rect_coords=None):
     return [-1, -1]
 
 
-def init_piece_rects(p1_remaining_pieces, p2_remaining_pieces):
+def init_piece_rects(p1_remaining_pieces):
     row, column = 0, 0
     for piece in p1_remaining_pieces.keys():
         piece_rects = []
@@ -138,22 +138,6 @@ def init_piece_rects(p1_remaining_pieces, p2_remaining_pieces):
                     y = info_box_height + (one_piece_box_height * row) + ((MARGIN + single_piece_height) * i)
                     piece_rects.append(pygame.Rect([x, y, single_piece_width, single_piece_height]))
         p1_remaining_pieces[piece]["rects"] = piece_rects
-        column += 1
-        if column == 2:
-            row += 1
-            column = 0
-
-    row, column = 0, 0
-    for piece in p2_remaining_pieces.keys():
-        piece_rects = []
-        for i in range(p2_remaining_pieces[piece]["arr"].shape[0]):
-            for j in range(p2_remaining_pieces[piece]["arr"].shape[1]):
-                if p2_remaining_pieces[piece]["arr"][i][j] == 1:
-                    x = piece_box_width + board_width + (one_piece_box_width * column) + (
-                            (MARGIN + single_piece_width) * j) + MARGIN
-                    y = info_box_height + (one_piece_box_height * row) + ((MARGIN + single_piece_height) * i)
-                    piece_rects.append(pygame.Rect([x, y, single_piece_width, single_piece_height]))
-        p2_remaining_pieces[piece]["rects"] = piece_rects
         column += 1
         if column == 2:
             row += 1

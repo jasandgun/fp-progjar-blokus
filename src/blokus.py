@@ -4,11 +4,22 @@ Main Blokus program
 
 import os
 import pygame
+import socket # for networking
+from threading import Thread # for threading
+import pickle # for sending/receiving objects 
 
 import constants
 import drawElements
 import player
 from board import Board
+
+HOST = '127.0.0.1'  # the server's IP address 
+PORT = 8080         # the port we're connecting to 
+
+# connect to the host
+s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+s.connect((HOST, PORT))
+print(f"\nConnected to {s.getsockname()}!")
 
 # game window will be drawn in the center of the screen
 os.environ['SDL_VIDEO_CENTERED'] = '1'
@@ -18,6 +29,7 @@ class Blokus:
     def __init__(self, player_init_params=None, render=True):
         if render:
             self.screen, self.background, self.piece_surface, self.clock = self.init_pygame()
+        self.player_symbol = s.recv(1024).decode()
         self.offset_list = []
         self.game_over = False
         self.selected = None
@@ -52,6 +64,7 @@ class Blokus:
             if event.type == pygame.QUIT:
                 self.game_over = True
                 IS_QUIT = True
+                s.close()
             elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                 if constants.ENABLE_VERBOSE > 1:
                     print("Mouse pos:", pygame.mouse.get_pos())
@@ -71,7 +84,10 @@ class Blokus:
                         # fitting the piece
                         if self.gameboard.fit_piece(active_player.current_piece, active_player, opponent):
                             self.selected = None
-                            active_player, opponent = player.switch_active_player(active_player, opponent)
+                            # send updated board
+                            print(f"\nSend updated board...")
+                            updated_board = pickle.dumps(self.gameboard.board)
+                            s.send(updated_board)
                         # display error message if it doesn't fit
                         else:
                             self.display_infobox_msg_start("not_valid_move")
@@ -87,7 +103,10 @@ class Blokus:
                         active_player.current_piece["arr"] = active_player.remaining_pieces[self.selected]["arr"]
                         active_player.current_piece["rects"] = active_player.remaining_pieces[self.selected]["rects"]
             elif event.type == pygame.MOUSEBUTTONUP:
-                drawElements.init_piece_rects(self.player1.remaining_pieces, self.player2.remaining_pieces)
+                if self.player_symbol == 'p1':
+                    drawElements.init_piece_rects(self.player1.remaining_pieces)
+                else:
+                    drawElements.init_piece_rects(self.player2.remaining_pieces)
             elif event.type == pygame.KEYDOWN:
                 if self.selected is not None:
                     self.key_controls(event, active_player)
@@ -116,12 +135,26 @@ class Blokus:
             self.infobox_msg_time_start = None
         elif pygame.time.get_ticks() - self.infobox_msg_time_start > self.infobox_msg_timeout:
             self.infobox_msg_time_start = None
+    
+    def recv_msg(self, sock):
+        # receive the board and update it
+        while not self.game_over:
+            updated_board = sock.recv(1024)
+            updated_board = pickle.loads(updated_board)
+            self.gameboard.board = updated_board
 
 
 def game_loop():
     pgc = Blokus()
-    active_player, opponent = pgc.player1, pgc.player2
-    drawElements.init_piece_rects(pgc.player1.remaining_pieces, pgc.player2.remaining_pieces)
+
+    if pgc.player_symbol == 'p1':
+        active_player, opponent = pgc.player1, pgc.player2
+        drawElements.init_piece_rects(pgc.player1.remaining_pieces)
+    else:
+        active_player, opponent = pgc.player2, pgc.player1
+        drawElements.init_piece_rects(pgc.player2.remaining_pieces)
+    
+    Thread(target=pgc.recv_msg, args=(s,)).start()
 
     while not pgc.game_over:
         # listening to player's input
