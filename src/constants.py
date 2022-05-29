@@ -49,3 +49,7 @@ STARTING_PTS = {"player1": [0, 0],
 # colors for players
 HUMAN_PARAMS = {"default_p1": {"color": DICT_COLORS[5]},
                 "default_p2": {"color": DICT_COLORS[6]}}
+
+# pickle identifiers
+BOARD_ID = "board-pickle"
+PLAYER_ID = "player-pickle"

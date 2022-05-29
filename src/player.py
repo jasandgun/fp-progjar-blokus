@@ -23,11 +23,15 @@ class Player:
 
         # tl = top left, bl = bottom left, tr = top right, br = bottom right
         self.board_corners = {"bl": [], "br": [], "tl": [], "tr": []}
-        self.is_1st_move = True
+        self.is_1st_move = True if self.number == constants.PLAYER1_VALUE else False
+        self.pickle_identifier = constants.PLAYER_ID
 
     # update player's score
     def update_score(self):
         self.score = board.scoring_fn(self.remaining_pieces)
+
+    def update_turn(self):
+        self.is_1st_move = not self.is_1st_move
 
     """
     Player's piece controls

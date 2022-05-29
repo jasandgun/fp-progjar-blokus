@@ -48,12 +48,12 @@ while True:
 
     client_socket.send('p1'.encode())
     Thread(target=client_thread, args=(client_socket,)).start()
-    print(f"\nConnnected to {client_address}!")
+    print(f"\nConnected to {client_address}!")
 
     client_socket, client_address = s.accept()
     list_of_clients.append(client_socket)
     client_socket.send('p2'.encode())
     Thread(target=client_thread, args=(client_socket,)).start()
-    print(f"\nConnnected to {client_address}!")
+    print(f"\nConnected to {client_address}!")
 
     print("\nGAME START !!!")

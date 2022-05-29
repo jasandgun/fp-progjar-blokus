@@ -15,6 +15,7 @@ class Board:
     def __init__(self):
         self.board = np.array([[empty for i in range(rows)] for j in range(cols)])
         self.turn_number = 1
+        self.pickle_identifier = constants.BOARD_ID
 
     def fit_piece(self, piece, player, opponent_player, mode="player"):
         piece_x_rng = range(piece["arr"].shape[0])
