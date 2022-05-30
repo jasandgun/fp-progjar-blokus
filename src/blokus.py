@@ -13,7 +13,7 @@ import drawElements
 import player
 from board import Board
 
-HOST = '127.0.0.1'  # the server's IP address 
+HOST = socket.gethostbyname(socket.gethostname())  # the server's IP address, default to own's machine
 PORT = 8080  # the port we're connecting to
 
 # connect to the host
@@ -25,10 +25,28 @@ print(f"\nConnected to {s.getsockname()}!")
 os.environ['SDL_VIDEO_CENTERED'] = '1'
 
 
+def init_pygame():
+    pygame.init()
+    window = pygame.display.set_mode(constants.WINDOW_SIZE)
+    background = pygame.Surface(constants.WINDOW_SIZE)
+    pygame.Surface([50, 50]).set_alpha(180)
+    clock = pygame.time.Clock()
+    pygame.display.set_caption(constants.CLIENT_CAPTION)
+    blokus_icon = pygame.image.load(constants.WINDOW_ICON)
+    pygame.display.set_icon(blokus_icon)
+    return window, background, clock
+
+
+def init_players(player_init_params):
+    player1 = player.Player(constants.PLAYER1_VALUE, player_init_params["p1"]["color"])
+    player2 = player.Player(constants.PLAYER2_VALUE, player_init_params["p2"]["color"])
+    return player1, player2
+
+
 class Blokus:
     def __init__(self, player_init_params=None, render=True):
         if render:
-            self.screen, self.background, self.clock = self.init_pygame()
+            self.screen, self.background, self.clock = init_pygame()
         self.player_symbol = s.recv(1024).decode()
         self.offset_list = []
         self.game_over = False
@@ -42,21 +60,7 @@ class Blokus:
         if player_init_params is None:
             player_init_params = {"p1": constants.HUMAN_PARAMS["default_p1"],
                                   "p2": constants.HUMAN_PARAMS["default_p2"]}
-        self.player1, self.player2 = self.init_players(player_init_params)
-
-    def init_pygame(self):
-        pygame.init()
-        window = pygame.display.set_mode(constants.WINDOW_SIZE)
-        background = pygame.Surface(constants.WINDOW_SIZE)
-        pygame.Surface([50, 50]).set_alpha(180)
-        clock = pygame.time.Clock()
-        pygame.display.set_caption("Blokus on Pygame")
-        return window, background, clock
-
-    def init_players(self, player_init_params):
-        player1 = player.Player(constants.PLAYER1_VALUE, player_init_params["p1"]["color"])
-        player2 = player.Player(constants.PLAYER2_VALUE, player_init_params["p2"]["color"])
-        return player1, player2
+        self.player1, self.player2 = init_players(player_init_params)
 
     # handle the events for Blokus
     def event_handler(self, active_player, opponent):

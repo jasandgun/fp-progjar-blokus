@@ -27,6 +27,11 @@ ORANGE = [255, 169, 0]
 ROW_COUNT = 14
 COLUMN_COUNT = 14
 
+# window properties
+CLIENT_CAPTION = "Blokus Client"
+SERVER_CAPTION = "Blokus Server"
+WINDOW_ICON = "./static/assets/blokus-icon.png"
+
 # total number of squares in all pieces
 STARTING_SCORE = 89
 
