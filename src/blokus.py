@@ -155,41 +155,41 @@ class Blokus:
 
 
 def game_loop():
-    pgc = Blokus()
+    blokus = Blokus()
 
-    if pgc.player_symbol == 'p1':
-        active_player, opponent = pgc.player1, pgc.player2
-        drawElements.init_piece_rects(pgc.player1.remaining_pieces)
+    if blokus.player_symbol == 'p1':
+        active_player, opponent = blokus.player1, blokus.player2
+        drawElements.init_piece_rects(blokus.player1.remaining_pieces)
     else:
-        active_player, opponent = pgc.player2, pgc.player1
-        drawElements.init_piece_rects(pgc.player2.remaining_pieces)
+        active_player, opponent = blokus.player2, blokus.player1
+        drawElements.init_piece_rects(blokus.player2.remaining_pieces)
 
-    Thread(target=pgc.recv_msg, args=(s,)).start()
+    Thread(target=blokus.recv_msg, args=(s,)).start()
 
-    while not pgc.game_over:
+    while not blokus.game_over:
         # listening to player's input
-        active_player, opponent = pgc.event_handler(active_player, opponent)
+        active_player, opponent = blokus.event_handler(active_player, opponent)
         # set the background
-        pgc.background.fill(constants.BLACK)
+        blokus.background.fill(constants.BLACK)
 
         """
         Draw the UI components
         """
         # text boxes
-        drawElements.draw_infobox(pgc.background, pgc.player1, pgc.player2, active_player)
-        if pgc.infobox_msg_time_start is not None:
-            drawElements.draw_infobox_msg(pgc.background, pgc.player1, pgc.player2, pgc.infobox_msg)
-            pgc.display_infobox_msg_end()
+        drawElements.draw_infobox(blokus.background, blokus.player1, blokus.player2, active_player)
+        if blokus.infobox_msg_time_start is not None:
+            drawElements.draw_infobox_msg(blokus.background, blokus.player1, blokus.player2, blokus.infobox_msg)
+            blokus.display_infobox_msg_end()
         # draw game board and selected pieces
-        drawElements.draw_gameboard(pgc.background, pgc.board_rects, pgc.gameboard, active_player.current_piece,
+        drawElements.draw_gameboard(blokus.background, blokus.board_rects, blokus.gameboard, active_player.current_piece,
                                     active_player, opponent)
-        drawElements.draw_pieces(pgc.background, pgc.player1, pgc.player2, active_player, pgc.selected)
-        if pgc.selected is not None:
-            drawElements.draw_selected_piece(pgc.background, pgc.offset_list, pygame.mouse.get_pos(),
+        drawElements.draw_pieces(blokus.background, blokus.player1, blokus.player2, active_player, blokus.selected)
+        if blokus.selected is not None:
+            drawElements.draw_selected_piece(blokus.background, blokus.offset_list, pygame.mouse.get_pos(),
                                              active_player.current_piece, active_player.color)
-        pgc.screen.blit(pgc.background, (0, 0))
+        blokus.screen.blit(blokus.background, (0, 0))
         # limit the fps to 60
-        pgc.clock.tick(60)
+        blokus.clock.tick(60)
 
         # update the screen
         pygame.display.update()
