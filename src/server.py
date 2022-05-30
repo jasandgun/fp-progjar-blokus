@@ -1,4 +1,5 @@
 import socket  # for networking
+import sys
 from threading import Thread  # for threading
 import pygame  # to display infobox
 import constants
@@ -45,21 +46,26 @@ def remove(connection):
 
 
 # accept a connection from the client
-while True:
-    client_socket, client_address = s.accept()
+try:
+    while True:
+        client_socket, client_address = s.accept()
 
-    for client in list_of_clients:
-        client.close()
-    list_of_clients = [client_socket]
+        for client in list_of_clients:
+            client.close()
+        list_of_clients = [client_socket]
 
-    client_socket.send('p1'.encode())
-    Thread(target=client_thread, args=(client_socket,)).start()
-    print(f"\nConnected to {client_address}!")
+        client_socket.send('p1'.encode())
+        Thread(target=client_thread, args=(client_socket,)).start()
+        print(f"\nConnected to {client_address}!")
 
-    client_socket, client_address = s.accept()
-    list_of_clients.append(client_socket)
-    client_socket.send('p2'.encode())
-    Thread(target=client_thread, args=(client_socket,)).start()
-    print(f"\nConnected to {client_address}!")
+        client_socket, client_address = s.accept()
+        list_of_clients.append(client_socket)
+        client_socket.send('p2'.encode())
+        Thread(target=client_thread, args=(client_socket,)).start()
+        print(f"\nConnected to {client_address}!")
 
-    print("\nGAME START !!!")
+        print("\nGAME START !!!")
+
+except KeyboardInterrupt:
+    s.close()
+    sys.exit()
