@@ -20,6 +20,8 @@ class Player:
         self.color = color
         self.score = board.scoring_fn(self.remaining_pieces)
         self.turn_number = 1
+        self.cant_move = False
+        self.truly_cant_move = False
 
         # tl = top left, bl = bottom left, tr = top right, br = bottom right
         self.board_corners = {"bl": [], "br": [], "tl": [], "tr": []}

@@ -56,6 +56,7 @@ class Blokus:
         self.infobox_msg_time_start = None
         self.infobox_msg_timeout = 4000
         self.infobox_msg = None
+        self.game_check = True
 
         if player_init_params is None:
             player_init_params = {"p1": constants.HUMAN_PARAMS["default_p1"],
@@ -69,6 +70,21 @@ class Blokus:
                 self.game_over = True
                 IS_QUIT = True
                 s.close()
+            elif active_player.is_1st_move is False and self.game_check is False:
+                self.game_check = True
+                active_player.cant_move = self.cant_i_move(active_player)
+                active_player.truly_cant_move = active_player.cant_move
+            elif active_player.cant_move is True:
+                if opponent.cant_move is True:
+                    self.game_over = True
+                    IS_QUIT = True
+                    s.close()
+                elif active_player.truly_cant_move is True:
+                    active_player.truly_cant_move = False
+                    print(f"\nSend updated statistics...")
+                    updated_statistics = pickle.dumps([self.gameboard.board, self.player1.score, self.player2.score])
+                    s.send(updated_statistics)
+                    active_player.update_turn()
             elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                 if constants.ENABLE_VERBOSE > 1:
                     print("Mouse pos:", pygame.mouse.get_pos())
@@ -93,6 +109,7 @@ class Blokus:
                             updated_statistics = pickle.dumps([self.gameboard.board, self.player1.score, self.player2.score])
                             s.send(updated_statistics)
                             active_player.update_turn()
+                            self.game_check = False
                         # display error message if it doesn't fit
                         else:
                             self.display_infobox_msg_start("not_valid_move")
@@ -116,6 +133,9 @@ class Blokus:
                 if self.selected is not None:
                     self.key_controls(event, active_player)
         return active_player, opponent
+
+    def cant_i_move(self, player):
+        return self.gameboard.is_no_more_move(player)
 
     def key_controls(self, event, active_player):
         # rotate left
@@ -152,8 +172,10 @@ class Blokus:
                 self.player2.score = updated_statistics[2]
                 if self.player_symbol == 'p1':
                     self.player1.update_turn()
+                    self.player1.truly_cant_move = True
                 elif self.player_symbol == 'p2':
                     self.player2.update_turn()
+                    self.player2.truly_cant_move = True
             except:
                 break
 
