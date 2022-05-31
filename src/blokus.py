@@ -76,13 +76,15 @@ class Blokus:
                 active_player.truly_cant_move = active_player.cant_move
             elif active_player.cant_move is True:
                 if opponent.cant_move is True:
+                    updated_statistics = pickle.dumps([self.gameboard.board, self.player1.score, self.player2.score, self.player1.cant_move, self.player2.cant_move])
+                    s.send(updated_statistics)
                     self.game_over = True
                     IS_QUIT = True
                     s.close()
                 elif active_player.truly_cant_move is True:
                     active_player.truly_cant_move = False
                     print(f"\nI have no more move..")
-                    updated_statistics = pickle.dumps([self.gameboard.board, self.player1.score, self.player2.score])
+                    updated_statistics = pickle.dumps([self.gameboard.board, self.player1.score, self.player2.score, self.player1.cant_move, self.player2.cant_move])
                     s.send(updated_statistics)
                     active_player.update_turn()
             elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
@@ -106,7 +108,7 @@ class Blokus:
                             self.selected = None
                             # send updated board
                             print(f"\nSend updated statistics...")
-                            updated_statistics = pickle.dumps([self.gameboard.board, self.player1.score, self.player2.score])
+                            updated_statistics = pickle.dumps([self.gameboard.board, self.player1.score, self.player2.score, self.player1.cant_move, self.player2.cant_move])
                             s.send(updated_statistics)
                             active_player.update_turn()
                             self.game_check = False
@@ -173,9 +175,11 @@ class Blokus:
                 if self.player_symbol == 'p1':
                     self.player1.update_turn()
                     self.player1.truly_cant_move = True
+                    self.player2.cant_move = updated_statistics[4]
                 elif self.player_symbol == 'p2':
                     self.player2.update_turn()
                     self.player2.truly_cant_move = True
+                    self.player1.cant_move = updated_statistics[3]
             except:
                 break
 
