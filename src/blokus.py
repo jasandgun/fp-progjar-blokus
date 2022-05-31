@@ -81,7 +81,7 @@ class Blokus:
                     s.close()
                 elif active_player.truly_cant_move is True:
                     active_player.truly_cant_move = False
-                    print(f"\nSend updated statistics...")
+                    print(f"\nI have no more move..")
                     updated_statistics = pickle.dumps([self.gameboard.board, self.player1.score, self.player2.score])
                     s.send(updated_statistics)
                     active_player.update_turn()

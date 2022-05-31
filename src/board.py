@@ -76,9 +76,16 @@ class Board:
         piece_y_rng = range(piece_arr.shape[1])
         board_x_rng = range(piece_on_board_at[0], rows)
         board_y_rng = range(piece_on_board_at[1], cols)
+        piece_block = 0
+        piece_count = 0
+        for i in piece_x_rng:
+            for j in piece_y_rng:
+                if piece_arr[i][j] == 1:
+                    piece_block += 1
         for i, x in zip(piece_x_rng, board_x_rng):
             for j, y in zip(piece_y_rng, board_y_rng):
                 if piece_arr[i][j] == 1:
+                    piece_count += 1
                     if self.board[x][y] != constants.BOARD_FILL_VALUE:
                         return False
                     if x-1 >= 0:
@@ -93,6 +100,9 @@ class Board:
                     if y+1 < cols:
                         if self.board[x][y+1] == player.number:
                             return False
+        if piece_count != piece_block:
+            return False
+        # print(f"\nactual : %d\nturn out: %d" % (piece_block, piece_count))
         for i, x in zip(piece_x_rng, board_x_rng):
             for j, y in zip(piece_y_rng, board_y_rng):
                 if piece_arr[i][j] == 1:
