@@ -78,7 +78,7 @@ class Blokus:
                 active_player.truly_cant_move = active_player.cant_move
             elif active_player.cant_move is True:
                 if opponent.cant_move is True:
-                    updated_statistics = pickle.dumps([self.gameboard.board, self.player1.score, self.player2.score, self.player1.cant_move, self.player2.cant_move])
+                    updated_statistics = pickle.dumps([self.gameboard.board, self.player1.score, self.player2.score, self.player1.cant_move, self.player2.cant_move, self.chatbox.chats])
                     s.send(updated_statistics)
                     self.game_over = True
                     IS_QUIT = True
@@ -86,7 +86,7 @@ class Blokus:
                 elif active_player.truly_cant_move is True:
                     active_player.truly_cant_move = False
                     print(f"\nI have no more move..")
-                    updated_statistics = pickle.dumps([self.gameboard.board, self.player1.score, self.player2.score, self.player1.cant_move, self.player2.cant_move])
+                    updated_statistics = pickle.dumps([self.gameboard.board, self.player1.score, self.player2.score, self.player1.cant_move, self.player2.cant_move, self.chatbox.chats])
                     s.send(updated_statistics)
                     active_player.update_turn()
             elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
@@ -110,7 +110,7 @@ class Blokus:
                             self.selected = None
                             # send updated board
                             print(f"\nSend updated statistics...")
-                            updated_statistics = pickle.dumps([self.gameboard.board, self.player1.score, self.player2.score, self.player1.cant_move, self.player2.cant_move])
+                            updated_statistics = pickle.dumps([self.gameboard.board, self.player1.score, self.player2.score, self.player1.cant_move, self.player2.cant_move, self.chatbox.chats])
                             s.send(updated_statistics)
                             active_player.update_turn()
                             self.game_check = False
@@ -137,7 +137,10 @@ class Blokus:
                 if self.selected is not None:
                     self.key_controls(event, active_player)
             # handle chatbox event
-            self.chatbox.handle_event(event)
+            updated_chatbox = self.chatbox.handle_event(event, self.player_symbol)
+            if updated_chatbox:
+                updated_statistics = pickle.dumps([self.gameboard.board, self.player1.score, self.player2.score, self.player1.cant_move, self.player2.cant_move, self.chatbox.chats])
+                s.send(updated_statistics)
         return active_player, opponent
 
     def cant_i_move(self, player):
@@ -173,6 +176,9 @@ class Blokus:
             try:
                 updated_statistics = sock.recv(1024)
                 updated_statistics = pickle.loads(updated_statistics)
+                if self.chatbox.chats != updated_statistics[5]:
+                    self.chatbox.chats = updated_statistics[5]
+                    continue
                 self.gameboard.board = updated_statistics[0]
                 self.player1.score = updated_statistics[1]
                 self.player2.score = updated_statistics[2]

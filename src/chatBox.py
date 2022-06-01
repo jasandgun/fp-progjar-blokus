@@ -5,7 +5,7 @@ pg.init()
 COLOR_INACTIVE = pg.Color('lightskyblue3')
 COLOR_ACTIVE = pg.Color('dodgerblue2')
 FONT = pg.font.Font(None, 32)
-
+CHAT_LIMIT = 15
 
 class ChatBox:
 
@@ -16,11 +16,12 @@ class ChatBox:
         self.txt_surface = FONT.render(text, True, self.color)
         self.chats = chats
         self.chat_txt_surface = []
-        for chat in self.chats:
+        for chat in self.chats[max(0,len(self.chats)-CHAT_LIMIT):]:
             self.chat_txt_surface.append(FONT.render(chat, True, self.color))
         self.active = False
 
-    def handle_event(self, event):
+    def handle_event(self, event, player_symbol):
+        updated_chatbox = False
         if event.type == pg.MOUSEBUTTONDOWN:
             # If the user clicked on the input_box rect.
             if self.rect.collidepoint(event.pos):
@@ -34,8 +35,9 @@ class ChatBox:
             if self.active:
                 if event.key == pg.K_RETURN:
                     if self.text != '':
-                        self.chats.append(self.text)
+                        self.chats.append(player_symbol + ': ' + self.text)
                         self.text = ''
+                        updated_chatbox = True
                 elif event.key == pg.K_BACKSPACE:
                     self.text = self.text[:-1]
                 else:
@@ -44,8 +46,9 @@ class ChatBox:
                 self.txt_surface = FONT.render(self.text, True, self.color)
                 # Limit the chat box
                 self.chat_txt_surface = []
-                for chat in self.chats[max(0,len(self.chats)-15):]:
+                for chat in self.chats[max(0,len(self.chats)-CHAT_LIMIT):]:
                     self.chat_txt_surface.append(FONT.render(chat, True, self.color))
+        return updated_chatbox
 
     def update(self):
         # Resize the box if the text is too long.
@@ -56,6 +59,9 @@ class ChatBox:
         # Blit the text.
         screen.blit(self.txt_surface, (self.rect.x+5, self.rect.y+5))
         # Blit the chat.
+        self.chat_txt_surface = []
+        for chat in self.chats[max(0,len(self.chats)-CHAT_LIMIT):]:
+            self.chat_txt_surface.append(FONT.render(chat, True, self.color))
         for line in range(len(self.chat_txt_surface)):
             screen.blit(self.chat_txt_surface[line], (self.rect.x, self.rect.y-560+(line*32)+(5*line)))
         # Blit the rect.
