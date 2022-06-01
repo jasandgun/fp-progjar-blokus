@@ -11,6 +11,7 @@ import pickle  # for sending/receiving objects
 import constants
 import drawElements
 import player
+from chatBox import ChatBox
 from board import Board
 
 HOST = socket.gethostbyname(socket.gethostname())  # the server's IP address, default to own's machine
@@ -57,6 +58,7 @@ class Blokus:
         self.infobox_msg_timeout = 4000
         self.infobox_msg = None
         self.game_check = True
+        self.chatbox = ChatBox(960, 670, 300, 30)
 
         if player_init_params is None:
             player_init_params = {"p1": constants.HUMAN_PARAMS["default_p1"],
@@ -134,6 +136,8 @@ class Blokus:
             elif event.type == pygame.KEYDOWN:
                 if self.selected is not None:
                     self.key_controls(event, active_player)
+            # handle chatbox event
+            self.chatbox.handle_event(event)
         return active_player, opponent
 
     def cant_i_move(self, player):
@@ -210,6 +214,7 @@ def game_loop():
         if blokus.infobox_msg_time_start is not None:
             drawElements.draw_infobox_msg(blokus.background, blokus.player1, blokus.player2, blokus.infobox_msg)
             blokus.display_infobox_msg_end()
+        
         # draw game board and selected pieces
         drawElements.draw_gameboard(blokus.background, blokus.board_rects, blokus.gameboard, active_player.current_piece,
                                     active_player, opponent)
@@ -217,7 +222,14 @@ def game_loop():
         if blokus.selected is not None:
             drawElements.draw_selected_piece(blokus.background, blokus.offset_list, pygame.mouse.get_pos(),
                                              active_player.current_piece, active_player.color)
+
+        # draw chat box
+        blokus.chatbox.update()
+        blokus.chatbox.draw(blokus.background)
+
+        # blit the screen
         blokus.screen.blit(blokus.background, (0, 0))
+
         # limit the fps to 60
         blokus.clock.tick(60)
 
