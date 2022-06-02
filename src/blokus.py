@@ -4,23 +4,15 @@ Main Blokus program
 
 import os
 import pygame
-import socket  # for networking
 from threading import Thread  # for threading
-import pickle  # for sending/receiving objects
 
 import constants
 import drawElements
 import player
+from network_manager import NetworkManager
 from chatBox import ChatBox
 from board import Board
 
-HOST = socket.gethostbyname(socket.gethostname())  # the server's IP address, defaults to the current machine
-PORT = 8080  # the port we're connecting to
-
-# connect to the host
-s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-s.connect((HOST, PORT))
-print(f"\nConnected to {s.getsockname()}!")
 
 # game window will be drawn in the center of the screen
 os.environ['SDL_VIDEO_CENTERED'] = '1'
@@ -48,7 +40,8 @@ class Blokus:
     def __init__(self, player_init_params=None, render=True):
         if render:
             self.screen, self.background, self.clock = init_pygame()
-        self.player_symbol = s.recv(1024).decode()
+        self.nm = NetworkManager()
+        self.player_symbol = self.nm.recv_data()
         self.offset_list = []
         self.game_over = False
         self.selected = None
@@ -71,29 +64,29 @@ class Blokus:
             if event.type == pygame.QUIT:
                 self.game_over = True
                 IS_QUIT = True
-                s.close()
+                self.nm.close_connection()
             elif active_player.is_1st_move is False and self.game_check is False:
                 self.game_check = True
                 active_player.cant_move = self.cant_i_move(active_player)
                 active_player.truly_cant_move = active_player.cant_move
             elif active_player.cant_move is True:
                 if opponent.cant_move is True:
-                    updated_statistics = pickle.dumps([self.gameboard.board,
-                                                       self.player1.score, self.player2.score,
-                                                       self.player1.cant_move, self.player2.cant_move,
-                                                       self.chatbox.chats])
-                    s.send(updated_statistics)
+                    updated_statistics = [self.gameboard.board,
+                                          self.player1.score, self.player2.score,
+                                          self.player1.cant_move, self.player2.cant_move,
+                                          self.chatbox.chats]
+                    self.nm.send_to_server(updated_statistics)
                     self.game_over = True
                     IS_QUIT = True
-                    s.close()
+                    self.nm.close_connection()
                 elif active_player.truly_cant_move is True:
                     active_player.truly_cant_move = False
                     print(f"\nI have no more move..")
-                    updated_statistics = pickle.dumps([self.gameboard.board,
-                                                       self.player1.score, self.player2.score,
-                                                       self.player1.cant_move, self.player2.cant_move,
-                                                       self.chatbox.chats])
-                    s.send(updated_statistics)
+                    updated_statistics = [self.gameboard.board,
+                                          self.player1.score, self.player2.score,
+                                          self.player1.cant_move, self.player2.cant_move,
+                                          self.chatbox.chats]
+                    self.nm.send_to_server(updated_statistics)
                     active_player.update_turn()
             elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                 if constants.ENABLE_VERBOSE > 1:
@@ -116,11 +109,11 @@ class Blokus:
                             self.selected = None
                             # send updated board
                             print(f"\nSend updated statistics...")
-                            updated_statistics = pickle.dumps([self.gameboard.board,
-                                                               self.player1.score, self.player2.score,
-                                                               self.player1.cant_move, self.player2.cant_move,
-                                                               self.chatbox.chats])
-                            s.send(updated_statistics)
+                            updated_statistics = [self.gameboard.board,
+                                                  self.player1.score, self.player2.score,
+                                                  self.player1.cant_move, self.player2.cant_move,
+                                                  self.chatbox.chats]
+                            self.nm.send_to_server(updated_statistics)
                             active_player.update_turn()
                             self.game_check = False
                         # display error message if it doesn't fit
@@ -148,11 +141,11 @@ class Blokus:
             # handle chatbox event
             updated_chatbox = self.chatbox.handle_event(event, self.player_symbol)
             if updated_chatbox:
-                updated_statistics = pickle.dumps([self.gameboard.board,
-                                                   self.player1.score, self.player2.score,
-                                                   self.player1.cant_move, self.player2.cant_move,
-                                                   self.chatbox.chats])
-                s.send(updated_statistics)
+                updated_statistics = [self.gameboard.board,
+                                      self.player1.score, self.player2.score,
+                                      self.player1.cant_move, self.player2.cant_move,
+                                      self.chatbox.chats]
+                self.nm.send_to_server(updated_statistics)
         return active_player, opponent
 
     def cant_i_move(self, player):
@@ -182,12 +175,11 @@ class Blokus:
         elif pygame.time.get_ticks() - self.infobox_msg_time_start > self.infobox_msg_timeout:
             self.infobox_msg_time_start = None
 
-    def recv_msg(self, sock):
+    def recv_msg(self):
         # receive the statistics and update it
         while not self.game_over:
             try:
-                updated_statistics = sock.recv(1024)
-                updated_statistics = pickle.loads(updated_statistics)
+                updated_statistics = self.nm.recv_pickle()
                 if self.chatbox.chats != updated_statistics[5]:
                     self.chatbox.chats = updated_statistics[5]
                     continue
@@ -216,7 +208,7 @@ def game_loop():
         active_player, opponent = blokus.player2, blokus.player1
         drawElements.init_piece_rects(blokus.player2.remaining_pieces)
 
-    Thread(target=blokus.recv_msg, args=(s,)).start()
+    Thread(target=blokus.recv_msg,).start()
 
     while not blokus.game_over:
         # listening to player's input
