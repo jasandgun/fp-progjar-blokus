@@ -13,7 +13,7 @@ cols = constants.COLUMN_COUNT
 
 class Board:
     def __init__(self):
-        self.board = np.array([[empty for i in range(rows)] for j in range(cols)])
+        self.board = np.array([[empty for _ in range(rows)] for _ in range(cols)])
         self.turn_number = 1
         self.pickle_identifier = constants.BOARD_ID
 
@@ -41,7 +41,7 @@ class Board:
                             self.board[x][y] = player.number * piece["arr"][i][j]
             else:
                 if constants.ENABLE_VERBOSE > 0:
-                    print("Piece %s placed at %s wasn't fit in the 1st turn" \
+                    print("Piece %s placed at %s wasn't fit in the 1st turn"
                           % (piece["piece"], piece["place_on_board_at"]))
                 return False
             if mode == "player":
@@ -65,12 +65,12 @@ class Board:
         player.update_score()
         if constants.ENABLE_VERBOSE > 0:
             print("After turn number %s board is:\n %s" % (self.turn_number - 1, self.board))
-            print("Current player's (Player %s) score is: %s and opponent's (Player %s) score is: %s" % \
+            print("Current player's (Player %s) score is: %s and opponent's (Player %s) score is: %s" %
                   (player.number, player.score, opponent_player.number, opponent_player.score))
         # self.update_board_corners(player, opponent_player)
         # self.optimised_update_board_corners(piece, player, opponent_player)
         return True
-    
+
     def check_is_move_valid(self, piece_arr, player, piece_on_board_at):
         piece_x_rng = range(piece_arr.shape[0])
         piece_y_rng = range(piece_arr.shape[1])
@@ -88,17 +88,17 @@ class Board:
                     piece_count += 1
                     if self.board[x][y] != constants.BOARD_FILL_VALUE:
                         return False
-                    if x-1 >= 0:
-                        if self.board[x-1][y] == player.number:
+                    if x - 1 >= 0:
+                        if self.board[x - 1][y] == player.number:
                             return False
-                    if x+1 < rows:
-                        if self.board[x+1][y] == player.number:
+                    if x + 1 < rows:
+                        if self.board[x + 1][y] == player.number:
                             return False
-                    if y-1 >= 0:
-                        if self.board[x][y-1] == player.number:
+                    if y - 1 >= 0:
+                        if self.board[x][y - 1] == player.number:
                             return False
-                    if y+1 < cols:
-                        if self.board[x][y+1] == player.number:
+                    if y + 1 < cols:
+                        if self.board[x][y + 1] == player.number:
                             return False
         if piece_count != piece_block:
             return False
@@ -106,22 +106,22 @@ class Board:
         for i, x in zip(piece_x_rng, board_x_rng):
             for j, y in zip(piece_y_rng, board_y_rng):
                 if piece_arr[i][j] == 1:
-                    if x-1 >= 0:
-                        if y-1 >= 0:
-                            if self.board[x-1][y-1] == player.number:
+                    if x - 1 >= 0:
+                        if y - 1 >= 0:
+                            if self.board[x - 1][y - 1] == player.number:
                                 return True
-                        if y+1 < cols:
-                            if self.board[x-1][y+1] == player.number:
+                        if y + 1 < cols:
+                            if self.board[x - 1][y + 1] == player.number:
                                 return True
-                    if x+1 < rows:
-                        if y-1 >= 0:
-                            if self.board[x+1][y-1] == player.number:
+                    if x + 1 < rows:
+                        if y - 1 >= 0:
+                            if self.board[x + 1][y - 1] == player.number:
                                 return True
-                        if y+1 < cols:
-                            if self.board[x+1][y+1] == player.number:
+                        if y + 1 < cols:
+                            if self.board[x + 1][y + 1] == player.number:
                                 return True
         return False
-    
+
     def is_no_more_move(self, player):
         remaining_piece = player.remaining_pieces
         piece = {"piece": "", "arr": [], "rotated": 0, "flipped": 0, "rects": [], "place_on_board_at": []}
@@ -141,7 +141,6 @@ class Board:
         return True
 
 
-
 def scoring_fn(remaining_pieces):
     score = constants.STARTING_SCORE
     if len(remaining_pieces) == 0:
@@ -156,7 +155,3 @@ def scoring_fn(remaining_pieces):
     if len(remaining_pieces) == 1 and "piece1" in remaining_pieces and score == 88:
         score += 5
     return score
-
-
-
-

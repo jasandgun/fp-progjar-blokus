@@ -6,22 +6,16 @@ Constants for Blokus
 ENABLE_VERBOSE = 1
 
 # colors that are used
-DICT_COLORS = {
-    0: [0, 0, 0],  # BLACK
-    1: [255, 255, 255],  # WHITE
-    2: [255, 0, 0],  # RED
-    3: [0, 255, 0],  # GREEN
-    4: [0, 0, 255],  # BLUE
-    5: [128, 0, 128],  # PURPLE
-    6: [255, 128, 0],  # ORANGE
-    7: [0, 128, 128],  # NAVY
+COLORS = {
+    "BLACK": [0, 0, 0],
+    "WHITE": [255, 255, 255],
+    "RED": [255, 0, 0],
+    "GREEN": [0, 255, 0],
+    "BLUE": [0, 0, 255],
+    "PURPLE": [128, 0, 128],
+    "ORANGE": [255, 128, 0],
+    "NAVY": [0, 128, 128],
 }
-BLACK = [0, 0, 0]
-WHITE = [255, 255, 255]
-GREEN = [0, 255, 0]
-RED = [255, 60, 0]
-PURPLE = [128, 0, 128]
-ORANGE = [255, 169, 0]
 
 # board size (rows x columns)
 ROW_COUNT = 14
@@ -52,8 +46,8 @@ STARTING_PTS = {"player1": [0, 0],
                 "player2": [ROW_COUNT - 1, COLUMN_COUNT - 1]}
 
 # colors for players
-HUMAN_PARAMS = {"default_p1": {"color": DICT_COLORS[5]},
-                "default_p2": {"color": DICT_COLORS[6]}}
+HUMAN_PARAMS = {"default_p1": {"color": COLORS["PURPLE"]},
+                "default_p2": {"color": COLORS["ORANGE"]}}
 
 # pickle identifiers
 BOARD_ID = "board-pickle"

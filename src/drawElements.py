@@ -53,7 +53,7 @@ def init_gameboard(board_arr):
     return rects
 
 
-def draw_gameboard(canvas, board_rects, gameboard, current_piece, player, opponent):
+def draw_gameboard(canvas, board_rects, gameboard, current_piece, player):
     counter = 0
     board_arr = gameboard.board
     is_valid_move = False
@@ -66,8 +66,8 @@ def draw_gameboard(canvas, board_rects, gameboard, current_piece, player, oppone
                         constants.STARTING_PTS["player%s" % player.number]:
                     is_valid_move = True
         else:
-            rect_coords = [ current_piece["rects"][0].centerx,
-                            current_piece["rects"][0].centery]
+            rect_coords = [current_piece["rects"][0].centerx,
+                           current_piece["rects"][0].centery]
             board_arr_coords = grid_to_array_coords(rect_coords)
             j = 0
             while not current_piece["arr"][0][j] == 1:
@@ -87,29 +87,30 @@ def draw_gameboard(canvas, board_rects, gameboard, current_piece, player, oppone
                     rect.y -= MARGIN
                     rect.h += 2 * MARGIN
                     rect.w += 2 * MARGIN
-                    pygame.draw.rect(canvas, constants.GREEN, rect)
+                    pygame.draw.rect(canvas, constants.COLORS["GREEN"], rect)
                     rect.x += MARGIN
                     rect.y += MARGIN
                     rect.h -= 2 * MARGIN
                     rect.w -= 2 * MARGIN
             # Board fill color
             if board_arr[row][column] == constants.BOARD_FILL_VALUE:
-                pygame.draw.rect(canvas, constants.WHITE, rect)
+                pygame.draw.rect(canvas, constants.COLORS["WHITE"], rect)
             elif board_arr[row][column] == constants.PLAYER1_VALUE:
-                pygame.draw.rect(canvas, constants.PURPLE, rect)
+                pygame.draw.rect(canvas, constants.HUMAN_PARAMS["default_p1"]["color"], rect)
             elif board_arr[row][column] == constants.PLAYER2_VALUE:
-                pygame.draw.rect(canvas, constants.ORANGE, rect)
+                pygame.draw.rect(canvas, constants.HUMAN_PARAMS["default_p2"]["color"], rect)
             # Blit the text to mark the starting points
             if [row, column] == constants.STARTING_PTS["player1"]:
-                text = pygame.font.SysFont(None, 15).render("Player 1", True, constants.BLACK)
+                text = pygame.font.SysFont(None, 15).render("Player 1", True, constants.COLORS["BLACK"])
                 canvas.blit(text, [rect.x, rect.centery - 2])
             elif [row, column] == constants.STARTING_PTS["player2"]:
-                text = pygame.font.SysFont(None, 15).render("Player 2", True, constants.BLACK)
+                text = pygame.font.SysFont(None, 15).render("Player 2", True, constants.COLORS["BLACK"])
                 canvas.blit(text, [rect.x, rect.centery - 2])
             else:
                 # WARNING: This rendering within the loop slows down the game
                 if constants.ENABLE_VERBOSE > 1:
-                    text = pygame.font.SysFont(None, 15).render("(%s, %s)" % (row, column), True, constants.BLACK)
+                    text = pygame.font.SysFont(None, 15).render("(%s, %s)" % (row, column), True,
+                                                                constants.COLORS["BLACK"])
                     canvas.blit(text, [rect.x + 2, rect.centery - 2])
             counter += 1
 
@@ -140,7 +141,7 @@ def draw_pieces(canvas, player1, player2, active_player, selected):
                 pygame.draw.rect(canvas, p1_color, unit_sq)
                 unit_sq.x -= MARGIN
                 unit_sq.y -= MARGIN
-                pygame.draw.rect(canvas, constants.WHITE, unit_sq, MARGIN)
+                pygame.draw.rect(canvas, constants.COLORS["WHITE"], unit_sq, MARGIN)
                 unit_sq.x += MARGIN
                 unit_sq.y += MARGIN
     for key, val in p2_pieces.items():
@@ -149,7 +150,7 @@ def draw_pieces(canvas, player1, player2, active_player, selected):
                 pygame.draw.rect(canvas, p2_color, unit_sq)
                 unit_sq.x -= MARGIN
                 unit_sq.y -= MARGIN
-                pygame.draw.rect(canvas, constants.WHITE, unit_sq, MARGIN)
+                pygame.draw.rect(canvas, constants.COLORS["WHITE"], unit_sq, MARGIN)
                 unit_sq.x += MARGIN
                 unit_sq.y += MARGIN
 
@@ -167,7 +168,7 @@ def draw_selected_piece(canvas, offset_list, mouse_pos, current_piece, player_co
                                    (board_box_height - single_piece_height) * i - MARGIN
                 rects[counter].h = board_box_height + (2 * MARGIN)
                 rects[counter].w = board_box_width + (2 * MARGIN)
-                pygame.draw.rect(canvas, constants.WHITE, rects[counter], MARGIN)
+                pygame.draw.rect(canvas, constants.COLORS["WHITE"], rects[counter], MARGIN)
                 rects[counter].x += MARGIN
                 rects[counter].y += MARGIN
                 rects[counter].h -= 2 * MARGIN
@@ -211,8 +212,8 @@ def are_squares_within_board(current_piece, board_rects):
 
 
 def draw_infobox(canvas, player1, player2, active_player):
-    text_dict = {"p1_score": "Player 1 Score: %s" % (player1.score),
-                 "p2_score": "Player 2 Score: %s" % (player2.score),
+    text_dict = {"p1_score": "Player 1 Score: %s" % player1.score,
+                 "p2_score": "Player 2 Score: %s" % player2.score,
                  "title": "Blokus on Pygame"}
 
     font = pygame.font.SysFont("Trebuchet MS", 30)
@@ -222,11 +223,11 @@ def draw_infobox(canvas, player1, player2, active_player):
     else:
         current_player_rect = pygame.Rect((piece_box_width + board_width + 20, 20, piece_box_width - 40,
                                            info_box_height - 40))  # x=1010, y=20, w=290, h=60
-    pygame.draw.rect(canvas, constants.GREEN, current_player_rect)
+    pygame.draw.rect(canvas, constants.COLORS["GREEN"], current_player_rect)
 
-    font_dict = {"p1_score": font.render(text_dict["p1_score"], False, constants.WHITE),
-                 "p2_score": font.render(text_dict["p2_score"], False, constants.WHITE),
-                 "title": font.render(text_dict["title"], False, constants.WHITE)}
+    font_dict = {"p1_score": font.render(text_dict["p1_score"], False, constants.COLORS["WHITE"]),
+                 "p2_score": font.render(text_dict["p2_score"], False, constants.COLORS["WHITE"]),
+                 "title": font.render(text_dict["title"], False, constants.COLORS["WHITE"])}
 
     pos_rect_dict = {"p1_score": pygame.Rect((0, 0, piece_box_width, info_box_height)),  # x=0, y=0, w=330, h=100
                      "p2_score": pygame.Rect((piece_box_width + board_width, 0, piece_box_width, info_box_height)),
@@ -269,9 +270,9 @@ def draw_infobox_msg(canvas, player1, player2, msg_key):
     game_over_text = ""
     if msg_key == "game_over":
         if player1.score > player2.score:
-            game_over_text = "Game over. Player %s wins!" % (player1.number)
+            game_over_text = "Game over. Player %s wins!" % player1.number
         elif player1.score < player2.score:
-            game_over_text = "Game over. Player %s wins!" % (player2.number)
+            game_over_text = "Game over. Player %s wins!" % player2.number
         else:
             game_over_text = "Game over. It's a tie!"
     text_dict = {"not_valid_move": "Invalid move. This piece cannot be placed there",
@@ -279,8 +280,8 @@ def draw_infobox_msg(canvas, player1, player2, msg_key):
 
     font = pygame.font.SysFont("Trebuchet MS", 25)
 
-    font_dict = {"not_valid_move": font.render(text_dict["not_valid_move"], False, constants.RED),
-                 "game_over": font.render(text_dict["game_over"], False, constants.GREEN)}
+    font_dict = {"not_valid_move": font.render(text_dict["not_valid_move"], False, constants.COLORS["RED"]),
+                 "game_over": font.render(text_dict["game_over"], False, constants.COLORS["GREEN"])}
 
     pos_rect_dict = {"not_valid_move": pygame.Rect((0, 0, info_box_width, info_box_height)),  # x=0, y=0, w=1280, h=100
                      "game_over": pygame.Rect((0, 0, info_box_width, info_box_height))}  # x=0, y=0, w=1280, h=100
