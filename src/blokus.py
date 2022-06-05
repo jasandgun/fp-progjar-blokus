@@ -59,6 +59,7 @@ class Blokus:
         self.infobox_msg = None
         self.game_check = True
         self.chatbox = ChatBox(960, 670, 300, 30)
+        self.win_status = None
 
         if player_init_params is None:
             player_init_params = {"p1": constants.HUMAN_PARAMS["default_p1"],
@@ -81,7 +82,8 @@ class Blokus:
                     updated_statistics = pickle.dumps([self.gameboard.board,
                                                        self.player1.score, self.player2.score,
                                                        self.player1.cant_move, self.player2.cant_move,
-                                                       self.chatbox.chats])
+                                                       self.chatbox.chats,
+                                                       self.win_status])
                     s.send(updated_statistics)
                     self.game_over = True
                     IS_QUIT = True
@@ -89,12 +91,15 @@ class Blokus:
                 elif active_player.truly_cant_move is True:
                     active_player.truly_cant_move = False
                     print(f"\nI have no more move..")
+                    self.win_status = True
                     updated_statistics = pickle.dumps([self.gameboard.board,
                                                        self.player1.score, self.player2.score,
                                                        self.player1.cant_move, self.player2.cant_move,
-                                                       self.chatbox.chats])
+                                                       self.chatbox.chats,
+                                                       self.win_status])
                     s.send(updated_statistics)
-                    active_player.update_turn()
+                    # active_player.update_turn()
+
             elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                 if constants.ENABLE_VERBOSE > 1:
                     print("Mouse pos:", pygame.mouse.get_pos())
@@ -119,7 +124,8 @@ class Blokus:
                             updated_statistics = pickle.dumps([self.gameboard.board,
                                                                self.player1.score, self.player2.score,
                                                                self.player1.cant_move, self.player2.cant_move,
-                                                               self.chatbox.chats])
+                                                               self.chatbox.chats,
+                                                               self.win_status])
                             s.send(updated_statistics)
                             active_player.update_turn()
                             self.game_check = False
@@ -151,7 +157,8 @@ class Blokus:
                 updated_statistics = pickle.dumps([self.gameboard.board,
                                                    self.player1.score, self.player2.score,
                                                    self.player1.cant_move, self.player2.cant_move,
-                                                   self.chatbox.chats])
+                                                   self.chatbox.chats,
+                                                   self.win_status])
                 s.send(updated_statistics)
         return active_player, opponent
 
@@ -194,6 +201,7 @@ class Blokus:
                 self.gameboard.board = updated_statistics[0]
                 self.player1.score = updated_statistics[1]
                 self.player2.score = updated_statistics[2]
+                self.win_status = updated_statistics[6]
                 if self.player_symbol == 'p1':
                     self.player1.update_turn()
                     self.player1.truly_cant_move = True
@@ -232,7 +240,7 @@ def game_loop():
         if blokus.infobox_msg_time_start is not None:
             drawElements.draw_infobox_msg(blokus.background, blokus.player1, blokus.player2, blokus.infobox_msg)
             blokus.display_infobox_msg_end()
-        
+
         # draw game board and selected pieces
         drawElements.draw_gameboard(blokus.background, blokus.board_rects, blokus.gameboard,
                                     active_player.current_piece, active_player)
@@ -241,6 +249,9 @@ def game_loop():
             drawElements.draw_selected_piece(blokus.background, blokus.offset_list, pygame.mouse.get_pos(),
                                              active_player.current_piece, active_player.color)
 
+        if blokus.win_status is not None:
+            #pgc.game_over = True
+            blokus.display_infobox_msg_start("game_over")
         # draw chat box
         blokus.chatbox.update()
         blokus.chatbox.draw(blokus.background)
