@@ -6,7 +6,9 @@ Constants for Blokus
 ENABLE_VERBOSE = 1
 
 # enable audio (false for mute)
-ENABLE_AUDIO = True
+ENABLE_AUDIO = False
+MUSIC_MENU = './static/assets/audio/music-game.mp3'
+SOUND_NEGATIVE = './static/assets/audio/sound-negative.wav'
 
 # colors that are used
 COLORS = {

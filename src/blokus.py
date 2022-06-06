@@ -10,6 +10,7 @@ import constants
 import drawElements
 import player
 import board
+from audio import AudioController
 from networkManager import NetworkManager
 from chatBox import ChatBox
 from board import Board
@@ -41,6 +42,8 @@ class Blokus:
         if render:
             self.screen, self.background, self.clock = init_pygame()
         self.nm = NetworkManager()
+        self.audio = AudioController()
+        self.audio.play_music(constants.MUSIC_MENU)
         self.player_symbol = self.nm.recv_data()
         self.offset_list = []
         self.game_over = False
