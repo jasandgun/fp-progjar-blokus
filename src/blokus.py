@@ -66,12 +66,12 @@ class Blokus:
                 self.game_over = True
                 IS_QUIT = True
                 self.nm.close_connection()
-            elif active_player.is_1st_move is False and self.game_check is False:
+            elif active_player.is_1st_move is False and self.game_check is False: # checking if game over | after opponent's move
                 self.game_check = True
                 active_player.cant_move = self.cant_i_move(active_player)
                 active_player.truly_cant_move = active_player.cant_move
-            elif active_player.cant_move is True:
-                if opponent.cant_move is True:
+            elif active_player.cant_move is True: #if active player have no more move available
+                if opponent.cant_move is True: #if opponent have no more move available
                     updated_statistics = [self.gameboard.board,
                                           self.player1.score, self.player2.score,
                                           self.player1.cant_move, self.player2.cant_move,
@@ -81,7 +81,7 @@ class Blokus:
                     self.game_over = True
                     IS_QUIT = True
                     self.nm.close_connection()
-                elif active_player.truly_cant_move is True:
+                elif active_player.truly_cant_move is True: #if this is active player turn
                     active_player.truly_cant_move = False
                     print(f"\nI have no more move..")
                     self.win_status = True
@@ -92,7 +92,7 @@ class Blokus:
                                           self.win_status]
                     self.nm.send_to_server(updated_statistics)
                     # active_player.update_turn()
-
+                # do nothing if this is not active player turn
             elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                 if constants.ENABLE_VERBOSE > 1:
                     print("Mouse pos:", pygame.mouse.get_pos())
@@ -196,12 +196,12 @@ class Blokus:
                 self.win_status = updated_statistics[6]
                 if self.player_symbol == 'p1':
                     self.player1.update_turn()
-                    self.player1.truly_cant_move = True
                     self.player2.cant_move = updated_statistics[4]
+                    self.player1.truly_cant_move = True
                 elif self.player_symbol == 'p2':
                     self.player2.update_turn()
-                    self.player2.truly_cant_move = True
                     self.player1.cant_move = updated_statistics[3]
+                    self.player2.truly_cant_move = True
             except:
                 break
 

@@ -14,8 +14,11 @@ class NetworkManager:
         print(f"\nConnected to {self.client_socket.getsockname()}!")
 
     def send_to_server(self, client_data):
-        pickled_data = pickle.dumps(client_data)
-        self.client_socket.send(pickled_data)
+        try:
+            pickled_data = pickle.dumps(client_data)
+            self.client_socket.send(pickled_data)
+        except:
+            print(f"\nConnection already closed")
 
     def close_connection(self):
         self.client_socket.close()
