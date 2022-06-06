@@ -5,6 +5,9 @@ Constants for Blokus
 # enable debugging (print to console)
 ENABLE_VERBOSE = 1
 
+# enable audio (false for mute)
+ENABLE_AUDIO = True
+
 # colors that are used
 COLORS = {
     "BLACK": [0, 0, 0],
@@ -24,7 +27,7 @@ COLUMN_COUNT = 14
 # window properties
 CLIENT_CAPTION = "Blokus Client"
 SERVER_CAPTION = "Blokus Server"
-WINDOW_ICON = "./static/assets/blokus-icon.png"
+WINDOW_ICON = "./static/assets/img/blokus-icon.png"
 
 # total number of squares in all pieces
 STARTING_SCORE = 89

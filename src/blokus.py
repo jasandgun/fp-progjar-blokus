@@ -10,10 +10,9 @@ import constants
 import drawElements
 import player
 import board
-from network_manager import NetworkManager
+from networkManager import NetworkManager
 from chatBox import ChatBox
 from board import Board
-
 
 # game window will be drawn in the center of the screen
 os.environ['SDL_VIDEO_CENTERED'] = '1'
@@ -67,12 +66,12 @@ class Blokus:
                 self.game_over = True
                 IS_QUIT = True
                 self.nm.close_connection()
-            elif active_player.is_1st_move is False and self.game_check is False: # checking if game over | after opponent's move
+            elif active_player.is_1st_move is False and self.game_check is False:  # checking if game over | after opponent's move
                 self.game_check = True
                 active_player.cant_move = self.cant_i_move(active_player)
                 active_player.truly_cant_move = active_player.cant_move
-            elif active_player.cant_move is True: #if active player have no more move available
-                if opponent.cant_move is True: #if opponent have no more move available
+            elif active_player.cant_move is True:  # if active player have no more move available
+                if opponent.cant_move is True:  # if opponent have no more move available
                     updated_statistics = [self.gameboard.board,
                                           self.player1.score, self.player2.score,
                                           self.player1.cant_move, self.player2.cant_move,
@@ -82,7 +81,7 @@ class Blokus:
                     self.game_over = True
                     IS_QUIT = True
                     self.nm.close_connection()
-                elif active_player.truly_cant_move is True: #if this is active player turn
+                elif active_player.truly_cant_move is True:  # if this is active player turn
                     active_player.truly_cant_move = False
                     print(f"\nI have no more move..")
                     self.win_status = True
@@ -217,7 +216,7 @@ def game_loop():
         active_player, opponent = blokus.player2, blokus.player1
         drawElements.init_piece_rects(blokus.player2.remaining_pieces)
 
-    Thread(target=blokus.recv_msg,).start()
+    Thread(target=blokus.recv_msg, ).start()
 
     while not blokus.game_over:
         # listening to player's input
@@ -243,7 +242,7 @@ def game_loop():
                                              active_player.current_piece, active_player.color)
 
         if blokus.win_status is not None:
-            #pgc.game_over = True
+            # pgc.game_over = True
             blokus.display_infobox_msg_start("game_over")
             # blokus.game_over = True
 
@@ -259,9 +258,10 @@ def game_loop():
 
         # update the screen
         pygame.display.update()
-    
+
     board.send_score(blokus.player1.score, blokus.player2.score)
-    
+
+
 if __name__ == "__main__":
     IS_QUIT = False
 
