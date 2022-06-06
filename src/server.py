@@ -12,8 +12,11 @@ s.bind((HOST, PORT))
 s.listen(2)
 
 # print
-print(f"Please edit client's host and port.\n"
-      f"Server IP and PORT: {HOST}:{PORT}")
+print(f"===========================================\n"
+      f"Please edit client's server connection.\n"
+      f"Server IP   :{HOST}\n"
+      f"Server PORT :{PORT}\n"
+      f"===========================================")
 
 # set up the client
 list_of_clients = []
