@@ -34,7 +34,7 @@ class Board:
                 for j, y in zip(piece_y_rng, board_y_rng):
                     if [x, y] == pos and piece["arr"][i][j] == 1:
                         is_within_starting_pos = True
-            if is_within_starting_pos:
+            if is_within_starting_pos and self.check_1st_move(piece["arr"], player, piece["place_on_board_at"]):
                 for i, x in zip(piece_x_rng, board_x_rng):
                     for j, y in zip(piece_y_rng, board_y_rng):
                         if piece["arr"][i][j] == 1 and self.board[x][y] == empty:
@@ -121,6 +121,40 @@ class Board:
                             if self.board[x + 1][y + 1] == player.number:
                                 return True
         return False
+
+    def check_1st_move(self, piece_arr, player, piece_on_board_at):
+        piece_x_rng = range(piece_arr.shape[0])
+        piece_y_rng = range(piece_arr.shape[1])
+        board_x_rng = range(piece_on_board_at[0], rows)
+        board_y_rng = range(piece_on_board_at[1], cols)
+        piece_block = 0
+        piece_count = 0
+        for i in piece_x_rng:
+            for j in piece_y_rng:
+                if piece_arr[i][j] == 1:
+                    piece_block += 1
+        for i, x in zip(piece_x_rng, board_x_rng):
+            for j, y in zip(piece_y_rng, board_y_rng):
+                if piece_arr[i][j] == 1:
+                    piece_count += 1
+                    if self.board[x][y] != constants.BOARD_FILL_VALUE:
+                        return False
+                    if x - 1 >= 0:
+                        if self.board[x - 1][y] == player.number:
+                            return False
+                    if x + 1 < rows:
+                        if self.board[x + 1][y] == player.number:
+                            return False
+                    if y - 1 >= 0:
+                        if self.board[x][y - 1] == player.number:
+                            return False
+                    if y + 1 < cols:
+                        if self.board[x][y + 1] == player.number:
+                            return False
+        if piece_count != piece_block:
+            return False
+        # print(f"\nactual : %d\nturn out: %d" % (piece_block, piece_count))
+        return True
 
     def is_no_more_move(self, player):
         remaining_piece = player.remaining_pieces
