@@ -1,13 +1,11 @@
 import socket  # for networking
 import sys
 from threading import Thread  # for threading
-import pygame  # to display infobox
-import constants
 
 HOST = socket.gethostbyname(socket.gethostname())  # this address is the ipv4
 PORT = 8080  # port to listen on for clients
 
-# set up the server 
+# set up the server
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 s.bind((HOST, PORT))
