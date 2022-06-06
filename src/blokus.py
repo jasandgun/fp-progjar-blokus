@@ -9,6 +9,7 @@ from threading import Thread  # for threading
 import constants
 import drawElements
 import player
+import board
 from network_manager import NetworkManager
 from chatBox import ChatBox
 from board import Board
@@ -244,6 +245,8 @@ def game_loop():
         if blokus.win_status is not None:
             #pgc.game_over = True
             blokus.display_infobox_msg_start("game_over")
+            # blokus.game_over = True
+
         # draw chat box
         blokus.chatbox.update()
         blokus.chatbox.draw(blokus.background)
@@ -256,8 +259,9 @@ def game_loop():
 
         # update the screen
         pygame.display.update()
-
-
+    
+    board.send_score(blokus.player1.score, blokus.player2.score)
+    
 if __name__ == "__main__":
     IS_QUIT = False
 

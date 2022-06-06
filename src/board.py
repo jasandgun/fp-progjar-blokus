@@ -4,6 +4,9 @@ Logic related to board
 
 import numpy as np
 
+import smtplib
+from email.message import EmailMessage
+
 import constants
 
 empty = constants.BOARD_FILL_VALUE
@@ -187,7 +190,7 @@ class Board:
                             return False
                     piece["arr"] = np.rot90(piece["arr"], k=1)
                     for z in range(player.remaining_pieces[key]["flips"]-1):
-                        piece["arr"] = np.flipud(piece["arr"], k=1)
+                        piece["arr"] = np.flipud(piece["arr"])
                         board_arr_coords = [x, y]
                         j = 0
                         while not piece["arr"][0][j] == 1:
@@ -214,3 +217,33 @@ def scoring_fn(remaining_pieces):
     if len(remaining_pieces) == 1 and "piece1" in remaining_pieces and score == 88:
         score += 5
     return score
+
+def send_score(score_p1, score_p2):
+    # Set username and App Passwords for Google Mail
+    # For testing, probably you don't have to change it
+    username = 'progjarprabu@gmail.com'
+    password = 'znhukbkwfsnkcvjx'
+
+    FROM_EMAIL_ADDRESS = username
+
+    # Change according to client email
+    TO_EMAIL_ADDRESS = 'progjarprabu@gmail.com'
+
+    Message = 'The games match score is' + '\n' + 'Player 1: ' + str(score_p1) + '\n' + 'Player 2: ' + str(score_p2) + '\n'
+    if score_p1 > score_p2:
+        Message += 'Player 1 Wins!'
+    else:
+        Message += 'Player 2 Wins!'
+
+    server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
+    
+    msg = EmailMessage()
+    msg.set_content(Message)
+
+    msg['Subject'] = 'Blokus App Score Report'
+    msg['From'] = FROM_EMAIL_ADDRESS
+    msg['To'] = TO_EMAIL_ADDRESS
+
+    server.login(username, password)
+    server.send_message(msg)
+    server.quit()    
