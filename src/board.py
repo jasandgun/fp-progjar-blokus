@@ -162,6 +162,7 @@ class Board:
         for key, val in remaining_piece.items():
             for x in range(rows):
                 for y in range(cols):
+                    #normal state
                     piece["arr"] = player.remaining_pieces[key]["arr"]
                     board_arr_coords = [x, y]
                     j = 0
@@ -172,6 +173,30 @@ class Board:
                     if self.check_is_move_valid(piece['arr'], player, piece['place_on_board_at']):
                         print(f"\nValid move %s at %d,%d" % (key, x, y))
                         return False
+                    #rotated state
+                    for z in range(player.remaining_pieces[key]["rots"]-1):
+                        piece["arr"] = np.rot90(piece["arr"], k=1)
+                        board_arr_coords = [x, y]
+                        j = 0
+                        while not piece["arr"][0][j] == 1:
+                            j += 1
+                        board_arr_coords[1] -= j
+                        piece["place_on_board_at"] = board_arr_coords
+                        if self.check_is_move_valid(piece['arr'], player, piece['place_on_board_at']):
+                            print(f"\nValid move %s at %d,%d" % (key, x, y))
+                            return False
+                    piece["arr"] = np.rot90(piece["arr"], k=1)
+                    for z in range(player.remaining_pieces[key]["flips"]-1):
+                        piece["arr"] = np.flipud(piece["arr"], k=1)
+                        board_arr_coords = [x, y]
+                        j = 0
+                        while not piece["arr"][0][j] == 1:
+                            j += 1
+                        board_arr_coords[1] -= j
+                        piece["place_on_board_at"] = board_arr_coords
+                        if self.check_is_move_valid(piece['arr'], player, piece['place_on_board_at']):
+                            print(f"\nValid move %s at %d,%d" % (key, x, y))
+                            return False
         return True
 
 
