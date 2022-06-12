@@ -2,6 +2,7 @@ import socket  # for networking
 import sys
 from threading import Thread  # for threading
 
+# HOST = '192.168.100.193'
 HOST = socket.gethostbyname(socket.gethostname())  # this address is the ipv4
 PORT = 8080  # port to listen on for clients
 

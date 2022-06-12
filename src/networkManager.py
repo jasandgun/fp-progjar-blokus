@@ -1,7 +1,8 @@
 import socket
 import pickle
 
-HOST = socket.gethostbyname(socket.gethostname())  # the server's IP address, defaults to the current machine
+# HOST = '192.168.100.193'
+HOST = socket.gethostbyname(socket.gethostname()) # the server's IP address, defaults to the current machine
 PORT = 8080  # the port we're connecting to
 
 
