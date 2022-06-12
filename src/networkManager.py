@@ -24,9 +24,9 @@ class NetworkManager:
         self.client_socket.close()
 
     def recv_pickle(self):
-        unpickled_data = self.client_socket.recv(1024)
+        unpickled_data = self.client_socket.recv(4096)
         unpickled_data = pickle.loads(unpickled_data)
         return unpickled_data
 
     def recv_data(self):
-        return self.client_socket.recv(1024).decode()
+        return self.client_socket.recv(4096).decode()

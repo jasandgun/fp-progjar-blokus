@@ -19,7 +19,7 @@ class ChatBox:
         self.chats = chats
         self.chat_txt_surface = []
         for chat in self.chats[max(0, len(self.chats) - CHAT_LIMIT):]:
-            self.chat_txt_surface.append(FONT.render(chat, True, self.color))
+            self.chat_txt_surface.append(FONT.render(chat, True, COLOR_ACTIVE))
         self.active = False
 
     def handle_event(self, event, player_symbol):
@@ -45,11 +45,11 @@ class ChatBox:
                 else:
                     self.text += event.unicode
                 # Re-render the text.
-                self.txt_surface = FONT.render(self.text, True, self.color)
+                self.txt_surface = FONT.render(self.text, True, COLOR_ACTIVE)
                 # Limit the chat box
                 self.chat_txt_surface = []
                 for chat in self.chats[max(0, len(self.chats) - CHAT_LIMIT):]:
-                    self.chat_txt_surface.append(FONT.render(chat, True, self.color))
+                    self.chat_txt_surface.append(FONT.render(chat, True, COLOR_ACTIVE))
         return updated_chatbox
 
     def update(self):
@@ -63,7 +63,7 @@ class ChatBox:
         # Blit the chat.
         self.chat_txt_surface = []
         for chat in self.chats[max(0, len(self.chats) - CHAT_LIMIT):]:
-            self.chat_txt_surface.append(FONT.render(chat, True, self.color))
+            self.chat_txt_surface.append(FONT.render(chat, True, COLOR_ACTIVE))
         for line in range(len(self.chat_txt_surface)):
             screen.blit(self.chat_txt_surface[line], (self.rect.x, self.rect.y - 560 + (line * 32) + (5 * line)))
         # Blit the rect.

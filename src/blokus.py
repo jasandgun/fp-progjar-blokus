@@ -231,7 +231,7 @@ def game_loop():
         Draw the UI components
         """
         # text boxes
-        drawElements.draw_infobox(blokus.background, blokus.player1, blokus.player2, active_player)
+        drawElements.draw_infobox(blokus.background, blokus.player1, blokus.player2, active_player, blokus.gameboard.turn_number)
         if blokus.infobox_msg_time_start is not None:
             drawElements.draw_infobox_msg(blokus.background, blokus.player1, blokus.player2, blokus.infobox_msg)
             blokus.display_infobox_msg_end()

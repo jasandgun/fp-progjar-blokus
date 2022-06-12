@@ -232,8 +232,10 @@ def send_score(score_p1, score_p2):
     Message = 'The games match score is' + '\n' + 'Player 1: ' + str(score_p1) + '\n' + 'Player 2: ' + str(score_p2) + '\n'
     if score_p1 > score_p2:
         Message += 'Player 1 Wins!'
-    else:
+    elif score_p1 < score_p2:
         Message += 'Player 2 Wins!'
+    else:
+        Message += 'Player 1 and Player 2 Draw!'
 
     server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
     

@@ -211,7 +211,7 @@ def are_squares_within_board(current_piece, board_rects):
     return True
 
 
-def draw_infobox(canvas, player1, player2, active_player):
+def draw_infobox(canvas, player1, player2, active_player, turn_number):
     text_dict = {"p1_score": "Player 1 Score: %s" % player1.score,
                  "p2_score": "Player 2 Score: %s" % player2.score,
                  "title": "Blokus on Pygame"}
@@ -223,7 +223,16 @@ def draw_infobox(canvas, player1, player2, active_player):
     else:
         current_player_rect = pygame.Rect((piece_box_width + board_width + 20, 20, piece_box_width - 40,
                                            info_box_height - 40))  # x=1010, y=20, w=290, h=60
-    pygame.draw.rect(canvas, constants.COLORS["GREEN"], current_player_rect)
+    if turn_number < 2:
+        if active_player.is_1st_move:
+            pygame.draw.rect(canvas, constants.COLORS["GREEN"], current_player_rect)
+        else:
+            pygame.draw.rect(canvas, constants.COLORS["RED"], current_player_rect)
+    else:
+        if active_player.is_1st_move:
+            pygame.draw.rect(canvas, constants.COLORS["RED"], current_player_rect)
+        else:
+            pygame.draw.rect(canvas, constants.COLORS["GREEN"], current_player_rect)
 
     font_dict = {"p1_score": font.render(text_dict["p1_score"], False, constants.COLORS["WHITE"]),
                  "p2_score": font.render(text_dict["p2_score"], False, constants.COLORS["WHITE"]),
