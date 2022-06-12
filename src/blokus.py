@@ -2,6 +2,7 @@
 Main Blokus program
 """
 
+from email.mime import audio
 import os
 import pygame
 from threading import Thread  # for threading
@@ -114,6 +115,7 @@ class Blokus:
 
                         # fitting the piece
                         if self.gameboard.fit_piece(active_player.current_piece, active_player, opponent, "player"):
+                            self.audio.play_fit_pieces()
                             self.selected = None
                             # send updated board
                             print(f"\nSend updated statistics...")
@@ -127,12 +129,14 @@ class Blokus:
                             self.game_check = False
                         # display error message if it doesn't fit
                         else:
+                            self.audio.play_wrong_fit_pieces()
                             self.display_infobox_msg_start("not_valid_move")
                     # clear the selection if clicking outside the board
                     else:
                         self.selected = None
                 # else check if there's a need to pick up a piece
                 else:
+                    self.audio.play_pickup_pieces()
                     self.offset_list, self.selected = drawElements.generate_element_offsets(
                         active_player.remaining_pieces, event)
                     if self.selected is not None:
@@ -246,6 +250,7 @@ def game_loop():
 
         if blokus.win_status is not None:
             # pgc.game_over = True
+            blokus.audio.play_game_over()
             blokus.display_infobox_msg_start("game_over")
             # blokus.game_over = True
 
