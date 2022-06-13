@@ -3,15 +3,13 @@ Constants for Blokus
 """
 
 # enable debugging (print to console)
-from doctest import FAIL_FAST
 
-from numpy import True_
-
+ENABLE_INTRO = True
 
 ENABLE_VERBOSE = 1
 
 # enable audio (false for mute)
-ENABLE_AUDIO = True
+ENABLE_AUDIO = False
 MUSIC_MENU = '../static/assets/audio/music-game.mp3'
 PIECES_CLICK = '../static/assets/audio/classic-click.wav'
 SOUND_NEGATIVE = '../static/assets/audio/sound-negative.wav'
@@ -39,6 +37,7 @@ COLUMN_COUNT = 14
 CLIENT_CAPTION = "Blokus Client"
 SERVER_CAPTION = "Blokus Server"
 WINDOW_ICON = "../static/assets/img/blokus-icon.png"
+INTRO_LOGO = "../static/assets/img/blokus.png"
 
 # total number of squares in all pieces
 STARTING_SCORE = 89
