@@ -22,7 +22,7 @@ class GameIntro:
         # for debugging
         if not constants.ENABLE_INTRO:
             return
-
+        self.done = False
         # draw window
         self.window, self.background, self.clock = init_pygame(win_size=[x / 2 for x in constants.WINDOW_SIZE])
 
@@ -36,10 +36,13 @@ class GameIntro:
         self.color_passive = pygame.Color('dodgerblue2')
         self.active = False
 
+        self.draw()
+
     def handle_event(self):
         for event in pygame.event.get():
             # quit
             if event.type == pygame.QUIT:
+                self.done = True
                 pygame.quit()
                 quit()
             # fill and add logo
@@ -61,21 +64,18 @@ class GameIntro:
                 else:
                     self.user_input += event.unicode
             # need further try-except to check ip
-            if event.key == pygame.K_RETURN:
+            if event.type == pygame.K_RETURN:
                 if self.user_input != '':
-                    self.server_ip = self.user_input
+                    self.server_ip.replace(self.server_ip, self.user_input)
                     self.user_input = ''
                 else:
                     pass
 
     def draw(self):
-        while True:
+        while not self.done:
             self.handle_event()
             # change colors based on activity
-            if self.active:
-                color = self.color_active
-            else:
-                color = self.color_passive
+            color = self.color_active if self.active else self.color_passive
             # draw the rectangle
             pygame.draw.rect(self.window, color, self.input_box)
             text_surface = self.font.render(self.user_input, True, (255, 255, 255))
@@ -89,4 +89,4 @@ class GameIntro:
 
 if __name__ == "__main__":
     intro = GameIntro()
-    intro.draw()
+    # print(intro.server_ip)
