@@ -31,7 +31,7 @@ class GameIntro:
         self.user_input = ''
         self.server_ip = ''
         # INPUT - box and color
-        self.input_box = pygame.Rect(200, 200, 140, 32)
+        self.input_box = pygame.Rect(250, 280, 150, 32)
         self.color_active = pygame.Color('lightskyblue3')
         self.color_passive = pygame.Color('dodgerblue2')
         self.active = False
@@ -77,10 +77,10 @@ class GameIntro:
             # change colors based on activity
             color = self.color_active if self.active else self.color_passive
             # draw the rectangle
-            pygame.draw.rect(self.window, color, self.input_box)
+            pygame.draw.rect(self.window, color, self.input_box,2)
             text_surface = self.font.render(self.user_input, True, (255, 255, 255))
             self.window.blit(text_surface, (self.input_box.x + 5, self.input_box.y + 5))
-            self.input_box.w = max(100, text_surface.get_width() + 10)
+            self.input_box.w = max(150, text_surface.get_width() + 10)
             pygame.display.flip()
             # the fps and update
             self.clock.tick(60)
@@ -89,4 +89,3 @@ class GameIntro:
 
 if __name__ == "__main__":
     intro = GameIntro()
-    # print(intro.server_ip)
