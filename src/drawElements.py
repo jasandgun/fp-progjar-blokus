@@ -214,7 +214,7 @@ def are_squares_within_board(current_piece, board_rects):
 def draw_infobox(canvas, player1, player2, active_player, turn_number):
     text_dict = {"p1_score": "Player 1 Score: %s" % player1.score,
                  "p2_score": "Player 2 Score: %s" % player2.score,
-                 "title": "Blokus on Pygame"}
+                 "title": "BLOKUS"}
 
     font = pygame.font.SysFont("Trebuchet MS", 30)
     if active_player.number == 1:
