@@ -7,9 +7,9 @@ PORT = 8080  # the port we're connecting to
 
 
 class NetworkManager:
-    def __init__(self, host=HOST, port=PORT):
+    def __init__(self, host, port):
         self.host = host
-        self.port = port
+        self.port = int(port)
         self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.client_socket.connect((self.host, self.port))
         print(f"\nConnected to {self.client_socket.getsockname()}!")
