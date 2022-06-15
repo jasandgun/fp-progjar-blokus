@@ -24,14 +24,15 @@ class GameIntro:
             return
         self.done = False
         # draw window
-        self.window, self.background, self.clock = init_pygame(win_size=[x / 2 for x in constants.WINDOW_SIZE])
+        self.window, self.background, self.clock = init_pygame(win_size=[x for x in constants.WINDOW_SIZE])
 
         # INPUT - font
         self.font = pygame.font.Font(None, 25)
         self.user_input = ''
         self.server_ip = ''
+        self.server_port = ''
         # INPUT - box and color
-        self.input_box = pygame.Rect(250, 280, 150, 32)
+        self.input_box = pygame.Rect(560, 480, 150, 32)
         self.color_active = pygame.Color('lightskyblue3')
         self.color_passive = pygame.Color('dodgerblue2')
         self.active = False
@@ -61,15 +62,16 @@ class GameIntro:
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_BACKSPACE:
                     self.user_input = self.user_input[:-1]
+                # need further try-except to check ip
+                elif event.key == pygame.K_RETURN:
+                    if self.user_input != '':
+                        temp = self.user_input.split(' ')
+                        self.server_ip = temp[0]
+                        self.server_port = temp[1]
+                        self.done = True
                 else:
                     self.user_input += event.unicode
-            # need further try-except to check ip
-            if event.type == pygame.K_RETURN:
-                if self.user_input != '':
-                    self.server_ip.replace(self.server_ip, self.user_input)
-                    self.user_input = ''
-                else:
-                    pass
+            
 
     def draw(self):
         while not self.done:
@@ -86,6 +88,6 @@ class GameIntro:
             self.clock.tick(60)
             pygame.display.update()
 
-
 if __name__ == "__main__":
     intro = GameIntro()
+
