@@ -15,6 +15,7 @@ from audio import AudioController
 from networkManager import NetworkManager
 from chatBox import ChatBox
 from board import Board
+from gameIntro import GameIntro
 
 # game window will be drawn in the center of the screen
 os.environ['SDL_VIDEO_CENTERED'] = '1'
@@ -39,10 +40,10 @@ def init_players(player_init_params):
 
 
 class Blokus:
-    def __init__(self, player_init_params=None, render=True):
+    def __init__(self, ip, port, player_init_params=None, render=True):
         if render:
             self.screen, self.background, self.clock = init_pygame()
-        self.nm = NetworkManager()
+        self.nm = NetworkManager(ip, port)
         self.audio = AudioController()
         self.audio.play_music(constants.MUSIC_MENU)
         self.player_symbol = self.nm.recv_data()
@@ -214,7 +215,8 @@ class Blokus:
 
 
 def game_loop():
-    blokus = Blokus()
+    intro = GameIntro()
+    blokus = Blokus(intro.server_ip, intro.server_port)
 
     if blokus.player_symbol == 'p1':
         active_player, opponent = blokus.player1, blokus.player2
@@ -273,7 +275,6 @@ def game_loop():
 
 if __name__ == "__main__":
     IS_QUIT = False
-
     game_loop()
 
     if IS_QUIT:
